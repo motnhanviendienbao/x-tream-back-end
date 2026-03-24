@@ -1,4 +1,4 @@
-package com.example.xtream.api.dto.response;
+package com.example.xtream.api.DTO.response;
 
 import java.time.OffsetDateTime;
 import java.util.Map;

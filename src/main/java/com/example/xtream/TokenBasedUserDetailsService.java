@@ -20,7 +20,7 @@ import java.util.List;
 public class TokenBasedUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private TokenRepository tokenRepository;
+    private  TokenRepository tokenRepository;
     @Autowired
     private UserAuthRepository userAuthRepository;
 
@@ -63,9 +63,9 @@ public class TokenBasedUserDetailsService implements UserDetailsService {
                 user.getId(),
                 user.getHashedPassword(),
                 user.getUserName(),
-                user.getResetPass(),
+                user.getIsResetHashedPass(),
                 user.getFailedCount() == null ? 0 : user.getFailedCount(),
-                user.getLocked(),
+                user.getIsLocked(),
                 user.getRole().name(),
                 user.getLastAccess()
         );

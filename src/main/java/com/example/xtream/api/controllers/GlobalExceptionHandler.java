@@ -1,6 +1,6 @@
 package com.example.xtream.api.controllers;
 
-import com.example.xtream.api.dto.response.ApiErrorResponse;
+import com.example.xtream.api.DTO.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

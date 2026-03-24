@@ -1,5 +1,6 @@
-package com.example.xtream.api.dto.response;
-public class RegisterResponse {
+package com.example.xtream.api.DTO.response;
+
+public class ResetPasswordResponse {
     private String message;
 
     public String getMessage() {

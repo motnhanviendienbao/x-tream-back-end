@@ -1,13 +1,11 @@
 package com.example.xtream;
 
 import com.example.xtream.api.models.Auth.Token;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.List;
+
 public class UserDetails extends User {
     private Long userId;
     private String hashedPassword;

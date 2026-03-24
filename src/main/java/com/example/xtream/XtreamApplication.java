@@ -13,10 +13,4 @@ public class XtreamApplication {
 
         SpringApplication.run(XtreamApplication.class, args);
     }
-
-    @Bean
-    public PasswordEncoder createPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }

@@ -15,7 +15,7 @@ public class User {
     @Column(name = "hashed_password", nullable = false, length = 255)
     private String hashedPassword;
 
-    @Column(name = "user_name", nullable = false, length = 255)
+    @Column(name = "user_name", nullable = false, length = 255,unique = true)
     private String userName;
 
     @Column(name = "created_at")
@@ -24,20 +24,20 @@ public class User {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
-    @Column(name = "reset_pass")
-    private Boolean resetPass;
+    @Column(name = "is_reset_hashed_password")
+    private Boolean isResetHashedPass;
 
     @Column(name = "failed_count")
     private Integer failedCount;
 
-    @Column(name = "locked")
-    private Boolean locked;
+    @Column(name = "is_locked")
+    private Boolean isLocked;
 
     @Column(name = "lock_until")
     private OffsetDateTime lockUntil;
 
-    @Column(name = "failed_window_start")
-    private OffsetDateTime failedWindowStart;
+    @Column(name = "failed_session_start")
+    private OffsetDateTime failedSessionStart;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
@@ -102,12 +102,12 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public Boolean getResetPass() {
-        return resetPass;
+    public Boolean getIsResetHashedPass() {
+        return isResetHashedPass;
     }
 
-    public void setResetPass(Boolean resetPass) {
-        this.resetPass = resetPass;
+    public void setIsResetHashedPass(Boolean resetPass) {
+        this.isResetHashedPass = isResetHashedPass;
     }
 
     public Integer getFailedCount() {
@@ -118,12 +118,12 @@ public class User {
         this.failedCount = failedCount;
     }
 
-    public Boolean getLocked() {
-        return locked;
+    public Boolean getIsLocked() {
+        return isLocked;
     }
 
-    public void setLocked(Boolean locked) {
-        this.locked = locked;
+    public void setIsLocked(Boolean isLocked) {
+        this.isLocked = isLocked;
     }
 
     public OffsetDateTime getLockUntil() {
@@ -134,12 +134,12 @@ public class User {
         this.lockUntil = lockUntil;
     }
 
-    public OffsetDateTime getFailedWindowStart() {
-        return failedWindowStart;
+    public OffsetDateTime getFailedSessionStart() {
+        return failedSessionStart;
     }
 
-    public void setFailedWindowStart(OffsetDateTime failedWindowStart) {
-        this.failedWindowStart = failedWindowStart;
+    public void setFailedSessionStart(OffsetDateTime failedSessionStart) {
+        this.failedSessionStart = failedSessionStart;
     }
 
     public Role getRole() {

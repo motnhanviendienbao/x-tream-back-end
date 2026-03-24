@@ -1,9 +1,9 @@
 package com.example.xtream.api.controllers;
 
-import com.example.xtream.api.dto.request.LoginRequest;
-import com.example.xtream.api.dto.request.RegisterRequest;
-import com.example.xtream.api.dto.response.LoginResponse;
-import com.example.xtream.api.dto.response.RegisterResponse;
+import com.example.xtream.api.DTO.request.LoginRequest;
+import com.example.xtream.api.DTO.request.RegisterRequest;
+import com.example.xtream.api.DTO.request.ResetPasswordRequest;
+import com.example.xtream.api.DTO.response.LoginResponse;
 import com.example.xtream.api.services.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +20,18 @@ public class UserAuthController {
     UserAuthService userAuthService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest ) {
-        LoginResponse result = userAuthService.login(loginRequest.getUsername(),loginRequest.getPassword());
-        return ResponseEntity.status(200).body(result);
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest ) {
+        LoginResponse token = userAuthService.login(loginRequest.getUsername(),loginRequest.getPassword());
+        return ResponseEntity.status(200).body(token);
     }
-
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
-
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         userAuthService.register(request.getUsername(), request.getPassword());
-
-        RegisterResponse response = new RegisterResponse();
-        response.setMessage("User registered successfully");
-
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.status(201).build();
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        userAuthService.resetPassword(request.getUsername() ,request.getNewPassword());
+        return ResponseEntity.ok().build();
     }
 }

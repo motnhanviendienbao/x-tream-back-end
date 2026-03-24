@@ -63,12 +63,5 @@ public class Token {
     public boolean isExpired() {
         return expiration.isBefore(OffsetDateTime.now());
     }
-
-
-//    public String getAuthHeader() {
-//        String rawToken = getId() + ":" + getValue();
-//        return "Basic " + Base64.getEncoder().encodeToString(rawToken.getBytes());
-//    }
-
 }
 

@@ -1,6 +1,6 @@
 package com.example.xtream.api.services;
 
-import com.example.xtream.api.dto.response.LoginResponse;
+import com.example.xtream.api.DTO.response.LoginResponse;
 import com.example.xtream.api.models.Auth.Token;
 import com.example.xtream.api.models.user.User;
 import com.example.xtream.api.repositories.TokenRepository;
@@ -25,33 +25,40 @@ public class UserAuthService {
     private TokenRepository tokenRepository;
 
     public LoginResponse login(String username, String password) {
-        User user = userAuthRepository.findByUserName(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+
+        User user = userAuthRepository
+                .findByUserName(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.UNAUTHORIZED,
+                                "Invalid username"));
 
         OffsetDateTime now = OffsetDateTime.now();
-
         // If account is locked, unlock automatically after 5 minutes.
-        if (Boolean.TRUE.equals(user.getLocked())) {
+        // check isLock?
+        if (Boolean.TRUE.equals(user.getIsLocked())) {
             OffsetDateTime lockUntil = user.getLockUntil();
             if (lockUntil != null && lockUntil.isAfter(now)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Account is locked");
             }
-            user.setLocked(false);
+            user.setIsLocked(false);
             user.setLockUntil(null);
             user.setFailedCount(0);
-            user.setFailedWindowStart(null);
+            user.setFailedSessionStart(null);
             user.setUpdatedAt(now);
             userAuthRepository.save(user);
         }
-        if (Boolean.TRUE.equals(user.getResetPass())) {
+
+        // check is forced reset hash pass
+        if (Boolean.TRUE.equals(user.getIsResetHashedPass())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Password reset required");
         }
 
+        //
         if (!passwordEncoder.matches(password, user.getHashedPassword())) {
-            OffsetDateTime windowStart = user.getFailedWindowStart();
-            if (windowStart == null || ChronoUnit.MINUTES.between(windowStart, now) >= 10) {
-                windowStart = now;
-                user.setFailedWindowStart(windowStart);
+            OffsetDateTime failedSessionStart = user.getFailedSessionStart();
+            if (failedSessionStart == null || ChronoUnit.MINUTES.between(failedSessionStart, now) >= 10) {
+                failedSessionStart = now;
+                user.setFailedSessionStart(null);
                 user.setFailedCount(0);
             }
 
@@ -61,7 +68,7 @@ public class UserAuthService {
 
             // If failed attempts within 10 minutes > 5, lock for 5 minutes and reset attempts to 0.
             if (failed > 5) {
-                user.setLocked(true);
+                user.setIsLocked(true);
                 user.setLockUntil(now.plusMinutes(5));
                 user.setFailedCount(0);
             }
@@ -70,8 +77,8 @@ public class UserAuthService {
         }
 
         user.setFailedCount(0);
-        user.setFailedWindowStart(null);
-        user.setLocked(false);
+        user.setFailedSessionStart(null);
+        user.setIsLocked(false);
         user.setLockUntil(null);
         user.setLastAccess(now);
         user.setUpdatedAt(now);
@@ -93,7 +100,8 @@ public class UserAuthService {
         return result;
     }
 
-    public Boolean register (String username, String password) {
+    public void register (String username, String password) {
+
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username/password is required");
         }
@@ -104,17 +112,35 @@ public class UserAuthService {
         User user = new User();
         user.setUserName(username);
         user.setHashedPassword(passwordEncoder.encode(password));
-        user.setLocked(false);
+        user.setIsLocked(false);
         user.setFailedCount(0);
-        user.setFailedWindowStart(null);
+        user.setFailedSessionStart(null);
         user.setLockUntil(null);
         user.setCreatedAt(OffsetDateTime.now());
         user.setUpdatedAt(OffsetDateTime.now());
-        user.setResetPass(false);
+        user.setIsResetHashedPass(false);
         user.setRole(User.Role.USER);
 
         userAuthRepository.save(user);
-        return true;
+
+    }
+
+    public void resetPassword(String username, String replacePlainTextPass) {
+        try{
+
+            User user = userAuthRepository.findByUserName(username).orElseThrow(
+                    () -> new ResponseStatusException(
+                            HttpStatus.UNAUTHORIZED,
+                            "Invalid username"));
+            // replace hash pass
+            user.setHashedPassword(passwordEncoder.encode(replacePlainTextPass));
+            // reset is_reset_hashed_password
+            user.setIsResetHashedPass(false);
+            userAuthRepository.save(user);
+
+        }catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "something went wrong, contact your admin");
+        }
     }
 
 }
