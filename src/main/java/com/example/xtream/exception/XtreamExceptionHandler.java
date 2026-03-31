@@ -18,41 +18,41 @@ public class XtreamExceptionHandler extends ResponseEntityExceptionHandler {
     {
         logger.error("System error", ex);
         ResponseDTO errorResponse =
-                ResponseDTO.builder().errors(List.of(ex.getMessage())).build();
+                ResponseDTO.builder().error(ex.getMessage()).build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(ResponseStatusException ex) {
         ResponseDTO errorResponse = ResponseDTO.builder()
-                .errors(List.of(ex.getReason()))
+                .error(ex.getReason())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
     @ExceptionHandler(SessionExpireException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(SessionExpireException ex) {
         ResponseDTO errorResponse = ResponseDTO.builder()
-                .errors(List.of(ex.getMessage()))
+                .error(List.of(ex.getMessage()))
                 .build();
         return ResponseEntity.status(440).body(errorResponse);
     }
     @ExceptionHandler(AdminForceResetPasswordException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(AdminForceResetPasswordException ex) {
         ResponseDTO errorResponse = ResponseDTO.builder()
-                .errors(List.of(ex.getMessage()))
+                .error(ex.getMessage())
                 .build();
         return ResponseEntity.status(409).body(errorResponse);
     }
     @ExceptionHandler(TooManyAttemptLoginException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(TooManyAttemptLoginException ex) {
         ResponseDTO errorResponse = ResponseDTO.builder()
-                .errors(List.of(ex.getMessage()))
+                .error(ex.getMessage())
                 .build();
         return ResponseEntity.status(429).body(errorResponse);
     }
     @ExceptionHandler(InvalidUsernamePasswordAuthenticationException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(InvalidUsernamePasswordAuthenticationException ex) {
         ResponseDTO errorResponse = ResponseDTO.builder()
-                .errors(List.of(ex.getMessage()))
+                .error(ex.getMessage())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

@@ -21,7 +21,7 @@ public class ResponseDTO
     /**
      * List of errors generated while processing request.
      **/
-    public List<String> errors;
+    public Object error;
 
     /**
      * total items of pagination

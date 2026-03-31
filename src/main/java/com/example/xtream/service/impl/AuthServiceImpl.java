@@ -1,5 +1,7 @@
 package com.example.xtream.service.impl;
+import com.example.xtream.constant.AuthServiceConstant;
 import com.example.xtream.dto.response.ResponseDTO;
+import com.example.xtream.exception.*;
 import com.example.xtream.model.auth.Token;
 import com.example.xtream.model.user.User;
 import com.example.xtream.repository.TokenRepository;
@@ -10,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResponseDTO login(String username, String password) {
         User user = checkUsernameAndPassword(username,password);
+        boundaryValidate(user,userRepository);
         String specifyRole = getSpecificRole(user);
         return createTokenForClient(specifyRole,user);
     }
@@ -40,7 +45,6 @@ public class AuthServiceImpl implements AuthService {
         doRegister(username,password);
         return ResponseDTO.builder().response("created").build();
     }
-    @Override
     @Transactional
     public ResponseDTO resetPassword(String username, String newPassword) {
         // check username exist
@@ -65,20 +69,45 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                 .findByUserName(username)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Invalid username"));
+                .orElseThrow(() -> new TooManyAttemptLoginException("Invalid username"));
         // check password
         if(!passwordEncoder.matches(password,user.getHashedPassword()))
         {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Invalid password");
+            throw new TooManyAttemptLoginException("Invalid password");
         }
         return user;
     }
     private String getSpecificRole(User user) {
         return "admin".equalsIgnoreCase(user.getRole().toString()) ? "admin" : "customer";
+    }
+    private void boundaryValidate(User user, UserRepository userRepository) {
+        OffsetDateTime now = OffsetDateTime.now();
+        // check flag
+        if(user.getResetPassword() != null && Boolean.TRUE.equals(user.getResetPassword()) ){
+            userRepository.saveAndFlush(refineUserInfor(user,AuthServiceConstant.RESET));
+            throw new AdminForceResetPasswordException("Force user login with new password");
+        }
+        // check session
+        if(user.getLastAccess() != null && (user.getLastAccess().plusMinutes(2).isBefore(now))) {
+            userRepository.saveAndFlush(refineUserInfor(user,AuthServiceConstant.SESSION));
+            throw new SessionExpireException("Session Expire");
+        }
+        // reset
+        user.setLastAccess(now);
+        user.setResetPassword(false);
+        userRepository.saveAndFlush(user);
+    }
+
+    private User refineUserInfor(User user, String flagMode) {
+        if("reset".equalsIgnoreCase(flagMode)) {
+            user.setLastAccess(OffsetDateTime.now());
+            user.setResetPassword(false);
+            return user;
+        } else if ("expire".equalsIgnoreCase(flagMode)) {
+            user.setLastAccess(OffsetDateTime.now());
+            return user;
+        }
+        return user;
     }
     private ResponseDTO createTokenForClient(String specifyRole, User user) {
         if("customer".equalsIgnoreCase(specifyRole)) {
@@ -121,10 +150,10 @@ public class AuthServiceImpl implements AuthService {
     // register
     private void validateUsernameAndPassword(String username,String password) {
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username/password is required");
+            throw new InvalidUsernamePasswordAuthenticationException("username/password is required");
         }
         if (userRepository.findByUserName(username).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+            throw new UsernameExistException("Username already exists");
         }
     }
     private void doRegister(String username, String password) {
