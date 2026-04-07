@@ -2,6 +2,8 @@ package com.example.xtream.security;
 import com.example.xtream.constant.CorsLevel;
 import com.example.xtream.constant.SystemEndpoint;
 import com.example.xtream.constant.SystemRole;
+import com.example.xtream.security.filter.SessionRequestFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,12 +13,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 public class SecurityFilterChainConfig {
     @Configuration
     @EnableMethodSecurity(prePostEnabled = true)
+    @RequiredArgsConstructor
     public static class WebSecurityConfig {
+        private final SessionRequestFilter sessionRequestFilter;
         @Bean
         public SecurityFilterChain securityFilterChain(
                 HttpSecurity http,
@@ -41,7 +46,9 @@ public class SecurityFilterChainConfig {
                             .anyRequest().authenticated()
                     )
                     .authenticationManager(authenticationManager)
-                    .httpBasic(Customizer.withDefaults());
+                    .httpBasic(Customizer.withDefaults())
+                        .addFilterAfter(sessionRequestFilter, BasicAuthenticationFilter.class);
+
                 return http.build();
         }
     }

@@ -1,6 +1,7 @@
 package com.example.xtream.model.auth;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -8,10 +9,12 @@ import java.util.Optional;
 @Entity
 @Table(name = "tokens")
 public class Token {
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
+    @Getter
     private String value;
 
     private OffsetDateTime expiration;
@@ -20,16 +23,8 @@ public class Token {
 
     private Long adminId;
 
-    public Long getId() {
-        return id;
-    }
-
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public void setValue(String value) {

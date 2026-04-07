@@ -13,13 +13,10 @@ public class User {
     private Long id;
     @Column(name = "hashed_password", nullable = false, length = 255)
     private String hashedPassword;
-
     @Column(name = "user_name", nullable = false, length = 255,unique = true)
     private String userName;
     @Column(name = "reset_password", nullable = true)
     private Boolean isResetPassword;
-    @Column(name = "last_access", nullable = true)
-    private OffsetDateTime lastAccess;
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
@@ -28,19 +25,9 @@ public class User {
     public Boolean getResetPassword() {
         return isResetPassword;
     }
-
     public void setResetPassword(Boolean resetPassword) {
         isResetPassword = resetPassword;
     }
-
-    public OffsetDateTime getLastAccess() {
-        return lastAccess;
-    }
-
-    public void setLastAccess(OffsetDateTime lastAccess) {
-        this.lastAccess = lastAccess;
-    }
-
     public Long getId() {
         return id;
     }

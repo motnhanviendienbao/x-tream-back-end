@@ -7,12 +7,13 @@ import com.example.xtream.model.user.User;
 import com.example.xtream.repository.TokenRepository;
 import com.example.xtream.repository.UserRepository;
 import com.example.xtream.service.iterface.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-    private static final Logger logger = LogManager.getLogger(AuthServiceImpl.class);
 
     public AuthServiceImpl(final PasswordEncoder passwordEncoder, final UserRepository userRepository, final TokenRepository tokenRepository) {
         this.passwordEncoder = passwordEncoder;
@@ -33,11 +33,10 @@ public class AuthServiceImpl implements AuthService {
         this.tokenRepository = tokenRepository;
     }
     @Transactional
-    public ResponseDTO login(String username, String password) {
+    public ResponseDTO login(String username, String password, HttpServletResponse response) {
         User user = checkUsernameAndPassword(username,password);
-        boundaryValidate(user,userRepository);
         String specifyRole = getSpecificRole(user);
-        return createTokenForClient(specifyRole,user);
+        return createTokenForClient(specifyRole,user,response);
     }
     @Transactional
     public ResponseDTO register (String username, String password) {
@@ -80,36 +79,10 @@ public class AuthServiceImpl implements AuthService {
     private String getSpecificRole(User user) {
         return "admin".equalsIgnoreCase(user.getRole().toString()) ? "admin" : "customer";
     }
-    private void boundaryValidate(User user, UserRepository userRepository) {
-        OffsetDateTime now = OffsetDateTime.now();
-        // check flag
-        if(user.getResetPassword() != null && Boolean.TRUE.equals(user.getResetPassword()) ){
-            userRepository.saveAndFlush(refineUserInfor(user,AuthServiceConstant.RESET));
-            throw new AdminForceResetPasswordException("Force user login with new password");
-        }
-        // check session
-        if(user.getLastAccess() != null && (user.getLastAccess().plusMinutes(2).isBefore(now))) {
-            userRepository.saveAndFlush(refineUserInfor(user,AuthServiceConstant.SESSION));
-            throw new SessionExpireException("Session Expire");
-        }
-        // reset
-        user.setLastAccess(now);
-        user.setResetPassword(false);
-        userRepository.saveAndFlush(user);
-    }
 
-    private User refineUserInfor(User user, String flagMode) {
-        if("reset".equalsIgnoreCase(flagMode)) {
-            user.setLastAccess(OffsetDateTime.now());
-            user.setResetPassword(false);
-            return user;
-        } else if ("expire".equalsIgnoreCase(flagMode)) {
-            user.setLastAccess(OffsetDateTime.now());
-            return user;
-        }
-        return user;
-    }
-    private ResponseDTO createTokenForClient(String specifyRole, User user) {
+
+
+    private ResponseDTO createTokenForClient(String specifyRole, User user, HttpServletResponse response) {
         if("customer".equalsIgnoreCase(specifyRole)) {
             // old user means have token assign for user, just get it up to reuse
             Token tokenCustomer =
@@ -129,6 +102,13 @@ public class AuthServiceImpl implements AuthService {
 
             String rawToken = tokenCustomer.getId()+":"+tokenCustomer.getValue();
             String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
+            // set cookie
+            Cookie newCookie = new Cookie("x-time", OffsetDateTime.now().toString());
+            newCookie.setPath("/");
+            newCookie.setHttpOnly(true);
+            newCookie.setMaxAge(60*60);
+            response.addCookie(newCookie);
+
             return ResponseDTO.builder().response(createdToken).build();
         }
         // for admin case
@@ -145,6 +125,12 @@ public class AuthServiceImpl implements AuthService {
 
         String rawToken = tokenAdmin.getId()+":"+tokenAdmin.getValue();
         String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
+        // set cookie
+        Cookie newCookie = new Cookie("x-time", OffsetDateTime.now().toString());
+        newCookie.setPath("/");
+        newCookie.setHttpOnly(true);
+        newCookie.setMaxAge(60*60);
+        response.addCookie(newCookie);
         return ResponseDTO.builder().response(createdToken).build();
     }
     // register

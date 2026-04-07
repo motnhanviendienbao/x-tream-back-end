@@ -1,6 +1,6 @@
 package com.example.xtream.exception;
 
-public class UsernameExistException extends RuntimeException{
+public class UsernameExistException extends RuntimeException {
     public UsernameExistException(final String message,
                                         final Exception exception)
     {
