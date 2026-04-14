@@ -1,4 +1,4 @@
-package com.example.xtream.model.auth;
+package com.example.xtream.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

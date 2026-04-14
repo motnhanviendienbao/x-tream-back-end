@@ -1,4 +1,4 @@
-package com.example.xtream.model.user;
+package com.example.xtream.model;
 
 import jakarta.persistence.*;
 

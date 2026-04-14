@@ -18,6 +18,11 @@ public class ResponseDTO
     public Object response;
 
     /**
+     * List data to be returned in the UI.
+     **/
+    public Object items;
+
+    /**
      * List of errors generated while processing request.
      **/
     public Object error;

@@ -2,7 +2,7 @@ package com.example.xtream.security.service;
 
 import com.example.xtream.constant.SystemRole;
 import com.example.xtream.security.modelUserDetail.AdminUserDetail;
-import com.example.xtream.model.auth.Token;
+import com.example.xtream.model.Token;
 import com.example.xtream.repository.TokenRepository;
 import com.example.xtream.security.modelUserDetail.CustomerUserDetail;
 import org.springframework.security.core.GrantedAuthority;

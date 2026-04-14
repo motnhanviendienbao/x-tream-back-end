@@ -1,6 +1,6 @@
 package com.example.xtream.repository;
 
-import com.example.xtream.model.auth.Token;
+import com.example.xtream.model.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

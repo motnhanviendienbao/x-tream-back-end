@@ -1,4 +1,4 @@
-package com.example.xtream.service.iterface;
+package com.example.xtream.service;
 import com.example.xtream.dto.response.ResponseDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
