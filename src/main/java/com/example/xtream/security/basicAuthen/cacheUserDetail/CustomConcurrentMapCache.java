@@ -1,4 +1,4 @@
-package com.example.xtream.security.cacheUserDetail;
+package com.example.xtream.security.basicAuthen.cacheUserDetail;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -6,14 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
-import com.example.xtream.service.impl.AuthServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 import org.springframework.core.serializer.support.SerializationDelegate;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
 public class CustomConcurrentMapCache extends AbstractValueAdaptingCache {

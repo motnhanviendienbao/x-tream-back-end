@@ -1,4 +1,5 @@
 package com.example.xtream.model;
+import com.example.xtream.config.audit.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Table(name = "investors")
-public class Investor {
+public class Investor extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

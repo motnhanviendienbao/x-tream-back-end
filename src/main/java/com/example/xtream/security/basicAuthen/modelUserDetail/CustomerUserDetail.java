@@ -1,4 +1,4 @@
-package com.example.xtream.security.modelUserDetail;
+package com.example.xtream.security.basicAuthen.modelUserDetail;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,17 +9,17 @@ import java.util.Collection;
 
 public class CustomerUserDetail extends User {
     private final Long customerID;
-    private  OffsetDateTime lastAccess;
+
     public CustomerUserDetail(String username, @Nullable String password, Collection<? extends GrantedAuthority> authorities, Long customerID) {
         super(username, password, authorities);
         this.customerID = customerID;
-        this.lastAccess = OffsetDateTime.now();
     }
+
     public CustomerUserDetail(String username, @Nullable String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long customerID) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.customerID = customerID;
-        this.lastAccess = OffsetDateTime.now();
     }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(" [");
@@ -32,10 +32,5 @@ public class CustomerUserDetail extends User {
         sb.append("Granted Authorities=").append(this.getAuthorities()).append("]");
         return sb.toString();
     }
-    public OffsetDateTime getLastAccess() {
-        return lastAccess;
-    }
-    public void setLastAccess(OffsetDateTime lastAccess) {
-        this.lastAccess = lastAccess;
-    }
+
 }

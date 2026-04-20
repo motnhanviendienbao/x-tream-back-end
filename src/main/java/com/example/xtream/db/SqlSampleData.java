@@ -1,6 +1,6 @@
-package com.example.xtream.sql.sameple;
+package com.example.xtream.db;
 
-public class sql {
+public class SqlSampleData {
 
 //    GET http://localhost:8080/api/investors?investorId=1&investorAccountId=2&investorEmail=john.smith@gmail.com&investorName=John&investorStatus=1&from=2020-01-01&to=2026-04-14&activeAccountOnly=true&postcode=100001&page=0&size=10&sort=id,desc
 

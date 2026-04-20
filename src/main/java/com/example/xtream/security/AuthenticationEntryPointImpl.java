@@ -7,14 +7,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 
 @Component
-public class AuthenticationEntryPoint implements org.springframework.security.web.AuthenticationEntryPoint
+public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint
 {
-    private static final Logger logger = LogManager.getLogger(AuthenticationEntryPoint.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationEntryPointImpl.class);
 
     @Override
     public void commence(final HttpServletRequest request,

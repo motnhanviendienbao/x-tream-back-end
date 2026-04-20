@@ -1,4 +1,4 @@
-package com.example.xtream.security.cacheUserDetail;
+package com.example.xtream.security.basicAuthen.cacheUserDetail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

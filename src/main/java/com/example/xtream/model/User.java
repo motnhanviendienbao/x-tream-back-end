@@ -1,12 +1,13 @@
 package com.example.xtream.model;
 
+import com.example.xtream.config.audit.Auditable;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

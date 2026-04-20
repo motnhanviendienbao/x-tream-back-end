@@ -1,4 +1,5 @@
     package com.example.xtream.model;
+    import com.example.xtream.config.audit.Auditable;
     import jakarta.persistence.*;
     import lombok.Getter;
     import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@
     @NoArgsConstructor
     @Getter
     @Setter
-    public class InvestorAccount {
+    public class InvestorAccount extends Auditable {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;

@@ -1,5 +1,6 @@
 package com.example.xtream.model;
 
+import com.example.xtream.config.audit.Auditable;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "tokens")
-public class Token {
+public class Token extends Auditable {
     @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

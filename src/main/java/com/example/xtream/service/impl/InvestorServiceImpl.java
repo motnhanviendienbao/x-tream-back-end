@@ -5,7 +5,9 @@ import com.example.xtream.model.Investor;
 import com.example.xtream.repository.InvestorAccountRepository;
 import com.example.xtream.repository.InvestorRepository;
 import com.example.xtream.service.InvestorService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,25 +16,27 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InvestorServiceImpl implements InvestorService {
 
     private InvestorAccountRepository investorAccountRepository;
     private InvestorRepository investorRepository;
 
+    public static final Logger logger = LogManager.getLogger(InvestorServiceImpl.class);
+
     /**
      * Get list page of investors by multi conditions
      *
-     * @param investorId
-     * @param investorAccountId
-     * @param investorEmail
-     * @param investorName
-     * @param investorStatus
-     * @param from
-     * @param to
-     * @param activeAccountOnly
-     * @param postcode
-     * @param pageable
+     * @param investorId    investorId
+     * @param investorAccountId investorAccountId
+     * @param investorEmail investorEmail
+     * @param investorName  investorName
+     * @param investorStatus    investorStatus
+     * @param from  from
+     * @param to    to
+     * @param activeAccountOnly activeAccountOnly
+     * @param postcode  postcode
+     * @param pageable  pageable
      * @return List of items
      */
 
@@ -44,7 +48,7 @@ public class InvestorServiceImpl implements InvestorService {
                                        Optional<LocalDate> to, Optional<Boolean> activeAccountOnly,
                                        Optional<String> postcode, Pageable pageable)
     {
-        // get investorId corresponding to investor account id if exist
+        // Get investorId corresponding to investor account id if exist
         if(investorAccountId.isPresent()) {
             investorId = investorAccountRepository.findInvestorIdByAccountId(investorAccountId.get().longValue());
         }
@@ -64,6 +68,7 @@ public class InvestorServiceImpl implements InvestorService {
             }
         }
 
+        // Pagination result
         Page<Investor> pageOfInvestors =
                 investorRepository
                         .findAllByMultiConditions(investorId,investorEmail

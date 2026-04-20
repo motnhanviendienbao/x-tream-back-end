@@ -8,6 +8,7 @@ import com.example.xtream.repository.UserRepository;
 import com.example.xtream.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -19,28 +20,54 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.UUID;
+
+/**
+ * Auth resource service
+ */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private static final Logger logger = LogManager.getLogger(AuthServiceImpl.class);
 
+    /**
+     * Auth the user
+     *
+     * @param username  information
+     * @param password  information
+     * @return  ResponseDTO contains token
+     */
     @Override
     @Transactional
-    public ResponseDTO login(String username, String password, HttpServletResponse response) {
+    public ResponseDTO login(String username, String password) {
         User user = checkUsernameAndPassword(username,password);
         String specifyRole = getSpecificRole(user);
         return createTokenForClient(specifyRole,user);
     }
 
+    /**
+     * Create new account
+     *
+     * @param username  information
+     * @param password  information
+     * @return  ResponseDTO
+     */
     @Transactional
     public ResponseDTO register (String username, String password) {
         validateUsernameAndPassword(username,password);
         doRegister(username,password);
         return ResponseDTO.builder().response("created").build();
     }
+
+    /**
+     * Reset user password by admin
+     * @param username  information
+     * @param newPassword   information
+     * @return  ResponseDTO
+     */
     @Transactional
     public ResponseDTO resetPassword(String username, String newPassword) {
         // check username exist
@@ -58,6 +85,7 @@ public class AuthServiceImpl implements AuthService {
                 .response("reset password success")
                 .build();
     }
+
     // sub-function
     // login
     private User checkUsernameAndPassword(String username, String password) {
@@ -78,12 +106,9 @@ public class AuthServiceImpl implements AuthService {
             throw ex;
         }
     }
+
     private String getSpecificRole(User user) {
         return "admin".equalsIgnoreCase(user.getRole().toString()) ? "admin" : "customer";
-    }
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveUserImmediately(User user) {
-        userRepository.saveAndFlush(user);
     }
 
     private ResponseDTO createTokenForClient(String specifyRole, User user) {
@@ -108,6 +133,7 @@ public class AuthServiceImpl implements AuthService {
             String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
             return ResponseDTO.builder().response(createdToken).build();
         }
+
         // for admin case
         Token tokenAdmin = tokenRepository.findById(user.getId()).orElseGet(
                 () -> {
@@ -124,15 +150,18 @@ public class AuthServiceImpl implements AuthService {
         String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
         return ResponseDTO.builder().response(createdToken).build();
     }
+
     // register
     private void validateUsernameAndPassword(String username,String password) {
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
             throw new InvalidUsernamePasswordAuthenticationException("username/password is required");
         }
+
         if (userRepository.findByUserName(username).isPresent()) {
             throw new UsernameExistException("Username already exists");
         }
     }
+
     private void doRegister(String username, String password) {
         User user = new User();
         user.setUserName(username);
@@ -145,6 +174,7 @@ public class AuthServiceImpl implements AuthService {
         } else {
             user.setRole(User.Role.CUSTOMER);
         }
+
         userRepository.save(user);
     }
 }

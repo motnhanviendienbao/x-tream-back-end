@@ -10,7 +10,8 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public interface InvestorRepository extends JpaRepository<Investor,Long> {
+public interface InvestorRepository extends JpaRepository<Investor,Long>
+{
     @Query(
             "select investor from Investor investor where "
                     + "(:investorId is null  or investor.id = :investorId) and"

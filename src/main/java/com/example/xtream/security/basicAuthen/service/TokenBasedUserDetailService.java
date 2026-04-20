@@ -1,10 +1,10 @@
-package com.example.xtream.security.service;
+package com.example.xtream.security.basicAuthen.service;
 
 import com.example.xtream.constant.SystemRole;
-import com.example.xtream.security.modelUserDetail.AdminUserDetail;
+import com.example.xtream.security.basicAuthen.modelUserDetail.AdminUserDetail;
 import com.example.xtream.model.Token;
 import com.example.xtream.repository.TokenRepository;
-import com.example.xtream.security.modelUserDetail.CustomerUserDetail;
+import com.example.xtream.security.basicAuthen.modelUserDetail.CustomerUserDetail;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
