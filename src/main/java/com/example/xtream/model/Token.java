@@ -2,12 +2,19 @@ package com.example.xtream.model;
 
 import com.example.xtream.config.audit.Auditable;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tokens")
 public class Token extends Auditable {
     @Getter
@@ -15,7 +22,6 @@ public class Token extends Auditable {
     @Id
     private Long id;
 
-    @Getter
     private String value;
 
     private OffsetDateTime expiration;
@@ -23,38 +29,6 @@ public class Token extends Auditable {
     private Long customerId;
 
     private Long adminId;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public OffsetDateTime getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(OffsetDateTime expiration) {
-        this.expiration = expiration;
-    }
-
-    public Optional<Long> getCustomerId() {
-        return Optional.ofNullable(customerId);
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public Optional<Long> getAdminId() {
-        return Optional.ofNullable(adminId);
-    }
-
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
-    }
 
 }
 

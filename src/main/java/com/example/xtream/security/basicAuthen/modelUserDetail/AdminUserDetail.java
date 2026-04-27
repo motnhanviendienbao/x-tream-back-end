@@ -7,15 +7,12 @@ import org.springframework.security.core.userdetails.User;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 public class AdminUserDetail extends User {
-    private final Long adminID;
 
-    public AdminUserDetail(String tokenID, @Nullable String tokenValue, Collection<? extends GrantedAuthority> authorities, Long adminID) {
+    public AdminUserDetail(String tokenID, @Nullable String tokenValue, Collection<? extends GrantedAuthority> authorities) {
         super(tokenID, tokenValue, authorities);
-        this.adminID = adminID;
     }
-    public AdminUserDetail(String tokenID, @Nullable String tokenValue, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long adminID) {
+    public AdminUserDetail(String tokenID, @Nullable String tokenValue, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
         super(tokenID, tokenValue, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.adminID = adminID;
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();

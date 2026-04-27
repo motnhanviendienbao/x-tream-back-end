@@ -8,16 +8,13 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 
 public class CustomerUserDetail extends User {
-    private final Long customerID;
 
-    public CustomerUserDetail(String username, @Nullable String password, Collection<? extends GrantedAuthority> authorities, Long customerID) {
+    public CustomerUserDetail(String username, @Nullable String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
-        this.customerID = customerID;
     }
 
-    public CustomerUserDetail(String username, @Nullable String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, Long customerID) {
+    public CustomerUserDetail(String username, @Nullable String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.customerID = customerID;
     }
 
     public String toString() {

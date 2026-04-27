@@ -1,7 +1,9 @@
 package com.example.xtream.service.impl;
 
+import com.example.xtream.dto.response.InvestorSearchDTO;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.model.Investor;
+import com.example.xtream.model.enums.Status;
 import com.example.xtream.repository.InvestorAccountRepository;
 import com.example.xtream.repository.InvestorRepository;
 import com.example.xtream.service.InvestorService;
@@ -19,8 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InvestorServiceImpl implements InvestorService {
 
-    private InvestorAccountRepository investorAccountRepository;
-    private InvestorRepository investorRepository;
+    private final InvestorAccountRepository investorAccountRepository;
+    private final InvestorRepository investorRepository;
 
     public static final Logger logger = LogManager.getLogger(InvestorServiceImpl.class);
 
@@ -44,40 +46,30 @@ public class InvestorServiceImpl implements InvestorService {
     @Transactional
     public ResponseDTO searchInvestors(Optional<Integer> investorId, Optional<Integer> investorAccountId,
                                        Optional<String> investorEmail, Optional<String> investorName,
-                                       Optional<Integer> investorStatus, Optional<LocalDate> from,
-                                       Optional<LocalDate> to, Optional<Boolean> activeAccountOnly,
+                                       Optional<Status> investorStatus, Optional<LocalDate> from,
+                                       Optional<LocalDate> to, Optional<Status> activeAccountOnly,
                                        Optional<String> postcode, Pageable pageable)
     {
-        // Get investorId corresponding to investor account id if exist
-        if(investorAccountId.isPresent()) {
-            investorId = investorAccountRepository.findInvestorIdByAccountId(investorAccountId.get().longValue());
-        }
-        if(investorStatus.isPresent() && investorStatus.get().equals(-1)) {
-            investorStatus = Optional.empty();
-        }
-        if (activeAccountOnly.isPresent() && activeAccountOnly.get().equals(Boolean.TRUE)) {
-            investorStatus = Optional.of(1);
-        }
+        // Check exist investorId
+        investorId.ifPresent(integer -> investorRepository
+                .findById(integer.longValue())
+                .orElseThrow(() -> new RuntimeException("Investor Id Not found")));
 
-        Optional<Boolean> investorStatusConverted = Optional.empty();
-        if(investorStatus.isPresent()) {
-            if(investorStatus.get().equals(1)) {
-                investorStatusConverted = Optional.of(true);
-            } else if (investorStatus.get().equals(0)) {
-                investorStatusConverted = Optional.of(false);
-            }
-        }
+        // Check exist investorAccountId
+        investorAccountId.ifPresent(integer -> investorAccountRepository
+                .findById(integer.longValue())
+                .orElseThrow(() -> new RuntimeException("Investor Account Id Not found")));
 
-        // Pagination result
-        Page<Investor> pageOfInvestors =
-                investorRepository
-                        .findAllByMultiConditions(investorId,investorEmail
-                                ,investorName,investorStatusConverted,from,to,postcode,pageable);
+        // Pagination
+        Page<InvestorSearchDTO> pageOfInvestors = investorRepository
+                        .findAllByMultiConditions(investorId,investorAccountId,investorEmail
+                                ,investorName,investorStatus,activeAccountOnly,from,to,postcode,pageable);
 
+        logger.info(pageOfInvestors.toString());
 
         return ResponseDTO
                 .builder()
-                .items(pageOfInvestors.getContent())
+                .response(pageOfInvestors.getContent())
                 .totalElements(pageOfInvestors.getTotalElements())
                 .totalPages(pageOfInvestors.getTotalPages())
                 .currentPage(pageOfInvestors.getNumber())

@@ -1,6 +1,8 @@
 package com.example.xtream.repository;
 
+import com.example.xtream.dto.response.InvestorSearchDTO;
 import com.example.xtream.model.Investor;
+import com.example.xtream.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,19 +14,34 @@ import java.util.Optional;
 
 public interface InvestorRepository extends JpaRepository<Investor,Long>
 {
-    @Query(
-            "select investor from Investor investor where "
-                    + "(:investorId is null  or investor.id = :investorId) and"
-                    + "(:investorName is null  or investor.name like %:investorName% ) and"
-                    + "(:investorStatus is null  or investor.status = :investorStatus) and"
-                    + "(:from is null or :to is null or investor.dob between :from and :to) and"
-                    + "(:investorEmail is null or investor.email = :investorEmail) and"
-                    + "(:postcode is null or investor.postCode like %:postcode%)")
-    Page<Investor> findAllByMultiConditions(
+        @Query("""
+            SELECT DISTINCT
+                investor.id as investorId,
+                CONCAT(investor.givenNames,' ', investor.surname) as investorName,
+                investor.status as investorStatus,
+                investor.dateOfBirth as investorDob,
+                investor.investorAddress.postCode as investorPostCode,
+                investorAccount.status as investorAccountStatus,
+                investor.email as investorEmail
+            FROM Investor investor
+            JOIN InvestorAccount investorAccount ON investor.id = investorAccount.investor.id
+            WHERE
+            (:investorId is null or investor.id = :investorId)
+            AND (:investorAccountId is null or investorAccount.id = :investorAccountId)
+            AND (:investorName is null or investor.givenNames LIKE %:investorName% or investor.surname LIKE %:investorName%)
+            AND (:investorStatus is null or investor.status = :investorStatus)
+            AND (:from is null or :to is null or investor.dateOfBirth between :from and :to)
+            AND (:investorEmail is null or investor.email = :investorEmail)
+            AND (:postcode is null or investor.investorAddress.postCode like %:postcode%)
+            AND (:activeAccountOnly is null or investorAccount.status = :activeAccountOnly)
+    """)
+    Page<InvestorSearchDTO> findAllByMultiConditions(
             @Param("investorId") Optional<Integer> investorId,
+            @Param("investorAccountId") Optional<Integer> investorAccountId,
             @Param("investorEmail") Optional<String> investorEmail,
             @Param("investorName") Optional<String> investorName,
-            @Param("investorStatus") Optional<Boolean> investorStatus,
+            @Param("investorStatus") Optional<Status> investorStatus,
+            @Param("activeAccountOnly") Optional<Status> activeAccountOnly,
             @Param("from") Optional<LocalDate> from,
             @Param("to") Optional<LocalDate> to,
             @Param("postcode") Optional<String> postcode,

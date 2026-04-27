@@ -7,8 +7,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
     public CustomDaoAuthenticationProvider(UserDetailsService userDetailsService) {
         super(userDetailsService);

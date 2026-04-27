@@ -1,8 +1,13 @@
 package com.example.xtream.rest;
 
 import com.example.xtream.dto.response.ResponseDTO;
+import com.example.xtream.model.enums.Status;
 import com.example.xtream.service.InvestorService;
+import com.example.xtream.service.impl.AuthServiceImpl;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -19,10 +24,12 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("api/investors")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InvestorResource {
 
-    private InvestorService investorService;
+    private final InvestorService investorService;
+    private static final Logger logger = LogManager.getLogger(InvestorResource.class);
+
 
     /**
      * get list investors
@@ -45,13 +52,24 @@ public class InvestorResource {
             @RequestParam("investorAccountId") Optional<Integer> investorAccountId,
             @RequestParam("investorEmail") Optional<String> investorEmail,
             @RequestParam("investorName") Optional<String> investorName,
-            @RequestParam("investorStatus") Optional<Integer> investorStatus,
+            @RequestParam("investorStatus") Optional<Status> investorStatus,
             @RequestParam("from") Optional<LocalDate> from,
             @RequestParam("to") Optional<LocalDate> to,
-            @RequestParam("activeAccountOnly") Optional<Boolean> activeAccountOnly,
+            @RequestParam("activeAccountOnly") Optional<Status> activeAccountOnly,
             @RequestParam("postcode") Optional<String> postcode,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable)
     {
+        logger.info
+                (investorId + "\n"
+                        + investorAccountId + "\n"
+                        + investorEmail + "\n"
+                        + investorName + "\n"
+                        + investorStatus + "\n"
+                        + from + "\n"
+                        + to + "\n"
+                        + activeAccountOnly + "\n"
+                        + postcode + "\n"
+                );
 
         return ResponseEntity.ok(investorService.searchInvestors(investorId,investorAccountId,investorEmail,
                 investorName,investorStatus,from,to,activeAccountOnly,postcode,pageable));
