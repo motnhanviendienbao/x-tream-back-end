@@ -59,20 +59,10 @@ public class InvestorResource {
             @RequestParam("postcode") Optional<String> postcode,
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable)
     {
-        logger.info
-                (investorId + "\n"
-                        + investorAccountId + "\n"
-                        + investorEmail + "\n"
-                        + investorName + "\n"
-                        + investorStatus + "\n"
-                        + from + "\n"
-                        + to + "\n"
-                        + activeAccountOnly + "\n"
-                        + postcode + "\n"
-                );
+        ResponseDTO response = investorService.searchInvestors(investorId,investorAccountId,investorEmail,
+                investorName,investorStatus,from,to,activeAccountOnly,postcode,pageable);
 
-        return ResponseEntity.ok(investorService.searchInvestors(investorId,investorAccountId,investorEmail,
-                investorName,investorStatus,from,to,activeAccountOnly,postcode,pageable));
+        return ResponseEntity.ok(response);
     }
 
 }

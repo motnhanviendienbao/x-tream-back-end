@@ -8,14 +8,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Investment resource
+ *
+ */
 @RestController
 @RequestMapping("/api/investments")
 @RequiredArgsConstructor
 public class InvestmentResource {
 
     private final InvestmentService investmentService;
+
+    /**
+     * Get all type of investments
+     *
+     * @return response contains array of investment
+     */
     @GetMapping("/tree")
-    public ResponseEntity<ResponseDTO> allInvestment() {
+    public ResponseEntity<ResponseDTO> allInvestments() {
         ResponseDTO response = investmentService.getAllInvestments();
         return ResponseEntity.ok(response);
     }
