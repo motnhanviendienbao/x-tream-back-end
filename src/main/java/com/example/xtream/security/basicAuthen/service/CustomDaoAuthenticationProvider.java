@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -30,6 +33,7 @@ import java.util.LinkedHashSet;
  * then
  * custom some method based on demand of logic
  * <p>
+ *
  * NOTICE:
  * In high level at AbstractUserDetailsAuthenticationProvider.
  * Where the main authentication method run (authenticate method),
@@ -40,6 +44,32 @@ import java.util.LinkedHashSet;
  * In brief, Got from cache ->
  * do additionalAuthenticationChecks,preAuthenticationChecks ->
  * any AuthenticationException -> retry got latest user detail object directly from loadUserByUsername.
+ * <p>
+ *
+ * NOTICE:
+ * In ProviderManager take role like {@link AuthenticationManager }
+ * its task is foreach through all provider to run authenticate if condition checks by supports() is true
+ * Main: have fallback mechanic by setter parent Authentication
+ * will run authenticate if got setting and not any provider matching supports()
+ * <p>
+ *
+ * NOTICE:
+ * SecurityContextRepository in basic authentication actually use request attribute to store context
+ * <p>
+ *
+ * NOTICE:
+ * SecurityContextHolderStrategy:
+ * It defines HOW and WHERE the SecurityContext is stored and accessed.
+ * <p>
+ *
+ * SecurityContextHolder
+ *     → HAS-A → SecurityContextHolderStrategy ( default is: ThreadLocalSecurityContextHolderStrategy())
+ *         → HAS-A → SecurityContext (stored internally, e.g. ThreadLocal)
+ *             → HAS-A → Authentication
+ * <p>
+ * SecurityContextHolder = chooses & delegates to strategy
+ * SecurityContextHolderStrategy = where the SecurityContext is actually stored and mutated
+ * One thread can only have ONE SecurityContext at a time.
  */
 @Service
 public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
