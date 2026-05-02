@@ -4,7 +4,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 
+/**
+ * @JsonInclude(JsonInclude.Include.NON_NULL)
+ * Declare for jackson knows just include NON_NULL fields in deserialize
+ * @JsonIgnoreProperties(ignoreUnknown = true)
+ * Declare for jackson knows do not care to serialize unknown field
+ * <p>
+ * This response DTO so:
+ * All filed must set object type
+ * if not, the filed will return default value of primitive[long,int] : 0
+ * Not get filtered by Jackson setting no null
+ */
 @Builder
 @Getter
 @Setter
@@ -36,5 +48,7 @@ public class ResponseDTO
      * current page of pagination
      */
     public Integer currentPage;
+
+
 }
 

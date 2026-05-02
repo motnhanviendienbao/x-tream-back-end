@@ -1,8 +1,6 @@
 package com.example.xtream.security;
 
-import com.example.xtream.constant.CorsLevel;
-import com.example.xtream.constant.SystemEndpoint;
-import com.example.xtream.constant.SystemRole;
+import com.example.xtream.constant.AuthenticationConstant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,13 +14,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
 /**
- * @EnableMethodSecurity(prePostEnabled = true)
+ * @EnableMethodSecurity(prePostEnabled = true,securedEnabled = true)
  * <p>
- * turn on check permission in method level
- * allow you to use @PreAuthorize, @PostAuthorize
+ * turn on check permission:
+ * allow you to use @PreAuthorize, @PostAuthorize, @Secured
  */
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true,securedEnabled = true)
 public class SecurityFilterChainConfig {
 
     /**
@@ -44,17 +42,15 @@ public class SecurityFilterChainConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(CorsLevel.ACCEPT_ALL));
-                    config.setAllowedMethods(List.of(CorsLevel.ACCEPT_ALL));
-                    config.setAllowedHeaders(List.of(CorsLevel.ACCEPT_ALL));
+                    config.setAllowedOrigins(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
+                    config.setAllowedMethods(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
+                    config.setAllowedHeaders(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
                     return config;
                 }))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(SystemEndpoint.ADMIN_PRIVILEGE_LIST).hasAuthority(SystemRole.ADMIN)
-                        .requestMatchers(SystemEndpoint.WHITE_LIST).permitAll()
-                        .requestMatchers(SystemEndpoint.PROTECTED_LIST).authenticated()
+                        .requestMatchers(AuthenticationConstant.SystemEndpoint.WHITE_LIST.getMessage()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

@@ -1,7 +1,7 @@
-package com.example.xtream.exception;
+package com.example.xtream.exception.custom;
 
-public class TooManyAttemptLoginException extends RuntimeException {
-    public TooManyAttemptLoginException(final String message,
+public class AdminForceResetPasswordException extends RuntimeException{
+    public AdminForceResetPasswordException(final String message,
                                   final Exception exception)
     {
         super(message, exception);
@@ -12,7 +12,7 @@ public class TooManyAttemptLoginException extends RuntimeException {
      *
      * @param message the detail message of the error.
      */
-    public TooManyAttemptLoginException(String message)
+    public AdminForceResetPasswordException(String message)
     {
         super(message);
     }

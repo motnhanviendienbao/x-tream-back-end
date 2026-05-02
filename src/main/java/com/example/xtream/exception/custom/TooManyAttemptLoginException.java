@@ -1,7 +1,7 @@
-package com.example.xtream.exception;
+package com.example.xtream.exception.custom;
 
-public class SessionExpireException extends RuntimeException {
-    public SessionExpireException(final String message,
+public class TooManyAttemptLoginException extends RuntimeException {
+    public TooManyAttemptLoginException(final String message,
                                   final Exception exception)
     {
         super(message, exception);
@@ -12,7 +12,7 @@ public class SessionExpireException extends RuntimeException {
      *
      * @param message the detail message of the error.
      */
-    public SessionExpireException(String message)
+    public TooManyAttemptLoginException(String message)
     {
         super(message);
     }

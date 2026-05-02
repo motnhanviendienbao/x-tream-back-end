@@ -21,7 +21,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint
                          final HttpServletResponse response, final AuthenticationException authException)
             throws IOException, ServletException
     {
-        logger.error("Unauthorized error: {}", authException.getMessage());
+        logger.info("[NGOC TU SERVER]: Unauthorized Error - Got Hold Back In Commence - Message Ex : {}",authException.getMessage());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }

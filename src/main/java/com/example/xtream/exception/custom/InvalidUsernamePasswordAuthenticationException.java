@@ -1,4 +1,4 @@
-package com.example.xtream.exception;
+package com.example.xtream.exception.custom;
 
 public class InvalidUsernamePasswordAuthenticationException extends RuntimeException {
 

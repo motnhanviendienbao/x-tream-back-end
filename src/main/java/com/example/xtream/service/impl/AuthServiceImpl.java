@@ -1,20 +1,19 @@
 package com.example.xtream.service.impl;
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.dto.response.ResponseDTO;
-import com.example.xtream.exception.*;
+import com.example.xtream.exception.custom.InvalidUsernamePasswordAuthenticationException;
+import com.example.xtream.exception.custom.UsernameExistException;
 import com.example.xtream.model.Token;
 import com.example.xtream.model.User;
 import com.example.xtream.repository.TokenRepository;
 import com.example.xtream.repository.UserRepository;
 import com.example.xtream.service.AuthService;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.OffsetDateTime;
@@ -59,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseDTO register (String username, String password) {
         validateUsernameAndPassword(username,password);
         doRegister(username,password);
-        return ResponseDTO.builder().response("created").build();
+        return ResponseDTO.builder().build();
     }
 
     /**
@@ -74,10 +73,7 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                 .findByUserName(username).orElseThrow(
-                ()-> new ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Invalid username")
-                );
+                ()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorMessages.Auth.INVALID_USERNAME.getMessage()));
         // hash and replace pass + reset state record
         user.setHashedPassword(passwordEncoder.encode(newPassword));
         userRepository.saveAndFlush(user);
@@ -94,16 +90,16 @@ public class AuthServiceImpl implements AuthService {
             User user =
                     userRepository
                             .findByUserName(username)
-                            .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException("Invalid username"));
+                            .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_USERNAME.getMessage()));
             // check password
             if(!passwordEncoder.matches(password,user.getHashedPassword()))
             {
-                throw new InvalidUsernamePasswordAuthenticationException("Invalid password");
+                throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_PASSWORD.getMessage());
             }
             return user;
-        } catch ( InvalidUsernamePasswordAuthenticationException ex) {
+        } catch ( InvalidUsernamePasswordAuthenticationException exception) {
 
-            throw ex;
+            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_USERNAME_OR_PASSWORD.getMessage());
         }
     }
 
@@ -148,17 +144,18 @@ public class AuthServiceImpl implements AuthService {
 
         String rawToken = tokenAdmin.getId()+":"+tokenAdmin.getValue();
         String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
+        // Basic Authentication have base64 decode token, so we have encoded sending to font-end for resend.
         return ResponseDTO.builder().response(createdToken).build();
     }
 
     // register
     private void validateUsernameAndPassword(String username,String password) {
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            throw new InvalidUsernamePasswordAuthenticationException("username/password is required");
+            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.USERNAME_PASSWORD_IS_REQUIRE.getMessage());
         }
 
         if (userRepository.findByUserName(username).isPresent()) {
-            throw new UsernameExistException("Username already exists");
+            throw new UsernameExistException(ErrorMessages.Auth.USERNAME_ALREADY_EXIST.getMessage());
         }
     }
 

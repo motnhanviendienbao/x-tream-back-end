@@ -1,5 +1,7 @@
 package com.example.xtream.service.impl;
 
+import com.example.xtream.constant.ErrorMessages;
+import com.example.xtream.dto.request.CreateInvestorRequestDTO;
 import com.example.xtream.dto.response.InvestorSearchDTO;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.model.Investor;
@@ -41,7 +43,6 @@ public class InvestorServiceImpl implements InvestorService {
      * @param pageable  pageable
      * @return List of items
      */
-
     @Override
     @Transactional
     public ResponseDTO searchInvestors(Optional<Integer> investorId, Optional<Integer> investorAccountId,
@@ -53,19 +54,18 @@ public class InvestorServiceImpl implements InvestorService {
         // Check exist investorId
         investorId.ifPresent(integer -> investorRepository
                 .findById(integer.longValue())
-                .orElseThrow(() -> new RuntimeException("Investor Id Not found")));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.Investor.INVESTOR_ID_NOT_FOUND.getMessage())));
 
         // Check exist investorAccountId
         investorAccountId.ifPresent(integer -> investorAccountRepository
                 .findById(integer.longValue())
-                .orElseThrow(() -> new RuntimeException("Investor Account Id Not found")));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.Investor.INVESTOR_ACCOUNT_ID_NOT_FOUND.getMessage())));
 
         // Pagination
         Page<InvestorSearchDTO> pageOfInvestors = investorRepository
                         .findAllByMultiConditions(investorId,investorAccountId,investorEmail
                                 ,investorName,investorStatus,activeAccountOnly,from,to,postcode,pageable);
 
-        logger.info(pageOfInvestors.toString());
 
         return ResponseDTO
                 .builder()
@@ -74,5 +74,18 @@ public class InvestorServiceImpl implements InvestorService {
                 .totalPages(pageOfInvestors.getTotalPages())
                 .currentPage(pageOfInvestors.getNumber())
                 .build();
+    }
+
+    /**
+     * Create new investor
+     *
+     * @param createInvestorRequestDTO Payload from request
+     * @return status
+     */
+    @Override
+    @Transactional
+    public ResponseDTO createInvestor(CreateInvestorRequestDTO createInvestorRequestDTO)
+    {
+        return null;
     }
 }

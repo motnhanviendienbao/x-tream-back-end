@@ -1,7 +1,7 @@
-package com.example.xtream.exception;
+package com.example.xtream.exception.custom;
 
-public class AdminForceResetPasswordException extends RuntimeException{
-    public AdminForceResetPasswordException(final String message,
+public class SessionExpireException extends RuntimeException {
+    public SessionExpireException(final String message,
                                   final Exception exception)
     {
         super(message, exception);
@@ -12,7 +12,7 @@ public class AdminForceResetPasswordException extends RuntimeException{
      *
      * @param message the detail message of the error.
      */
-    public AdminForceResetPasswordException(String message)
+    public SessionExpireException(String message)
     {
         super(message);
     }
