@@ -1,9 +1,13 @@
 package com.example.xtream.rest;
 
+import com.example.xtream.dto.request.CreateInvestorRequestDTO;
+import com.example.xtream.dto.request.UpdateInvestorDetailsDTO;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.model.enums.Status;
 import com.example.xtream.service.InvestorService;
 import com.example.xtream.service.impl.AuthServiceImpl;
+import com.example.xtream.service.impl.InvestorServiceImpl;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -12,10 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -29,7 +32,6 @@ public class InvestorResource {
 
     private final InvestorService investorService;
     private static final Logger logger = LogManager.getLogger(InvestorResource.class);
-
 
     /**
      * get list investors
@@ -61,7 +63,52 @@ public class InvestorResource {
     {
         ResponseDTO response = investorService.searchInvestors(investorId,investorAccountId,investorEmail,
                 investorName,investorStatus,from,to,activeAccountOnly,postcode,pageable);
+        return ResponseEntity.ok(response);
+    }
 
+    /**
+     * Get details of specific investor without investment info
+     *
+     * @param investorId param
+     * @return investor details
+     */
+    @GetMapping("/detail/{investorId}")
+    public ResponseEntity<ResponseDTO> getInvestorDetails(@PathVariable Long investorId)
+    {
+        ResponseDTO response = investorService.getInvestorDetails(investorId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Add Investor with investment allocation
+     */
+    @PostMapping("/add")
+    public ResponseEntity<ResponseDTO> createInvestor(
+            @RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO)
+    {
+        ResponseDTO response = investorService.createInvestor(createInvestorRequestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Update investor details info without investment info
+     * @param updateInvestorDetailsDTO request
+     * @return status
+     */
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDTO> updateInvestorDetails(
+            @RequestBody @Valid UpdateInvestorDetailsDTO updateInvestorDetailsDTO)
+    {
+        ResponseDTO response = investorService.updateInvestorDetails(updateInvestorDetailsDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/accounts/{investorId}")
+    public ResponseEntity<ResponseDTO> updateInvestorDetails(
+            @PathVariable Long investorId,
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable)
+    {
+        ResponseDTO response = investorService.getInvestorAccountsByInvestorId(investorId,pageable);
         return ResponseEntity.ok(response);
     }
 

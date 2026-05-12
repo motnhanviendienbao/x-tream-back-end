@@ -2,11 +2,13 @@ package com.example.xtream.model;
 
 import com.example.xtream.config.audit.Auditable;
 import jakarta.persistence.*;
-
-import java.time.OffsetDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User extends Auditable {
 
     @Id
@@ -18,47 +20,4 @@ public class User extends Auditable {
     private String userName;
     @Column(name = "reset_password", nullable = true)
     private Boolean isResetPassword;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Role role;
-
-
-    public Boolean getResetPassword() {
-        return isResetPassword;
-    }
-    public void setResetPassword(Boolean resetPassword) {
-        isResetPassword = resetPassword;
-    }
-    public Long getId() {
-        return id;
-    }
-
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public enum Role {
-        ADMIN,
-        CUSTOMER
-    }
 }

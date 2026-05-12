@@ -2,6 +2,7 @@ package com.example.xtream.dto.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
@@ -18,8 +19,7 @@ import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
  * Not get filtered by Jackson setting no null
  */
 @Builder
-@Getter
-@Setter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseDTO

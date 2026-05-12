@@ -16,6 +16,8 @@ import java.util.Optional;
 @Repository
 public interface InvestorRepository extends JpaRepository<Investor,Long>
 {
+        Optional<Investor> findByEmail(String email);
+        Optional<Investor> findByTaxFileNumber(String taxFileNumber);
         @Query("""
             SELECT DISTINCT
                 investor.id as investorId,

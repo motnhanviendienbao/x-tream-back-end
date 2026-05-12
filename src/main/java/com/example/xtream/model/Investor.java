@@ -54,18 +54,20 @@ public class Investor extends Auditable {
     private String primaryPhone;
 
     @Column(name = "best_contact_method", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ContactMethod bestContactMethod;
+    private String bestContactMethod;
 
     @Column(name = "next_contact_method", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ContactMethod nextContactMethod;
+    private String nextContactMethod;
 
     @Column(name = "mobile", unique = true, nullable = false, length = 25)
     private String mobile;
 
     @Column(name = "secondary_phone", unique = true, nullable = false, length = 25)
     private String secondaryPhone;
+
+
+    @Column(name = "gender", unique = false, nullable = false, length = 25)
+    private String gender;
 
     @Embedded
     private InvestorAddress investorAddress;

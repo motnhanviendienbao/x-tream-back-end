@@ -29,6 +29,5 @@ public class Token extends Auditable {
     private Long customerId;
 
     private Long adminId;
-
 }
 

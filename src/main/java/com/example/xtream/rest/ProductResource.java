@@ -4,6 +4,7 @@ import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ public class ProductResource {
      * @return response contains array of product tree
      */
     @GetMapping("/tree")
+    @Secured("PRODUCT:GET")
     public ResponseEntity<ResponseDTO> productTree() {
         ResponseDTO response = productService.getProductTree();
         return ResponseEntity.ok(response);

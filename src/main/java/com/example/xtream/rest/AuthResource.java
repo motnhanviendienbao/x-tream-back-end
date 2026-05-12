@@ -7,6 +7,7 @@ import com.example.xtream.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -38,7 +39,7 @@ public class AuthResource {
      */
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
-        return ResponseEntity.ok(authServiceImpl.register(request.getUsername(), request.getPassword()));
+        return ResponseEntity.ok(authServiceImpl.register(request.getUsername(), request.getPassword(), request.getCode()));
     }
 
     /**
@@ -47,6 +48,7 @@ public class AuthResource {
      * @param request   information
      * @return  status
      */
+    @Secured("AUTH:UPDATE")
     @PostMapping("/reset-password")
     public ResponseEntity<ResponseDTO> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
         return ResponseEntity.ok(authServiceImpl.resetPassword(request.getUsername(),request.getNewPassword()));

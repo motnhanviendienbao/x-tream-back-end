@@ -6,6 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
     ResponseDTO login(String username, String password);
-    ResponseDTO register(String username, String password);
+    ResponseDTO register(String username, String password, String code);
     ResponseDTO resetPassword(String username, String newPassword);
 }

@@ -26,12 +26,15 @@ public final class ErrorMessages {
 
     public enum Investor {
         INVESTOR_ID_NOT_FOUND("Investor Id Not Found"),
-        INVESTOR_ACCOUNT_ID_NOT_FOUND("Investor Account Id Not Found");
+        INVESTOR_ACCOUNT_ID_NOT_FOUND("Investor Account Id Not Found"),
+        PRODUCT_NOT_FOUND("Product Not Found"),
+        INVESTMENT_NOT_FOUND("Investment Not Found"),
+        EMAIL_ALREADY_EXISTS("Email Already Exists"),
+        TFN_ALREADY_EXISTS("Tax File Number Already Exists"),
+        INVESTMENT_STRATEGY_MUST_TOTAL_100("Investment Strategy Must Total 100%"),
+        INVESTMENTS_REQUIRED("At Least One Investment Is Required");
 
-
-
-
-        private String message;
+        private final String message;
         Investor(String message) {
             this.message = message;
         }
