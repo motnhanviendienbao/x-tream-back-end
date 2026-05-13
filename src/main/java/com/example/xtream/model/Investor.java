@@ -1,15 +1,14 @@
 package com.example.xtream.model;
 import com.example.xtream.config.audit.Auditable;
-import com.example.xtream.model.enums.ContactMethod;
-import com.example.xtream.model.enums.Status;
+import com.example.xtream.model.common.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +69,10 @@ public class Investor extends Auditable {
     private String gender;
 
     @Embedded
+    @JsonUnwrapped
     private InvestorAddress investorAddress;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "investor", fetch = FetchType.LAZY)
     private List<InvestorAccount> investorAccounts = new ArrayList<>();
 }

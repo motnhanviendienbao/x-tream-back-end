@@ -2,7 +2,7 @@ package com.example.xtream.repository;
 
 import com.example.xtream.dto.response.InvestorSearchDTO;
 import com.example.xtream.model.Investor;
-import com.example.xtream.model.enums.Status;
+import com.example.xtream.model.common.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

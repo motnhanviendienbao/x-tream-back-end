@@ -1,6 +1,7 @@
 package com.example.xtream.security.basicAuthen.cache;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -16,19 +17,17 @@ import java.util.Map;
  * Manual Cache
  */
 @Service
-@Primary
+@Getter
 public final class BasicUserCache implements UserCache {
 
     /**
      * Cache element
      */
-    @Getter
     private final Map<String, UserDetails> cache = new HashMap<>(200);
 
     /**
      * Monitor lock for manipulating cache
      */
-    @Getter
     private final Object lock = new Object();
 
     /**

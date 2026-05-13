@@ -1,8 +1,7 @@
 package com.example.xtream.model;
 
-import com.example.xtream.model.enums.Status;
-import com.example.xtream.model.enums.UnitPriceSelectionMethod;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.xtream.model.common.Status;
+import com.example.xtream.model.common.UnitPriceSelectionMethod;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

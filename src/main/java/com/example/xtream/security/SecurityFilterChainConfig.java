@@ -1,8 +1,7 @@
 package com.example.xtream.security;
 
-import com.example.xtream.constant.AuthenticationConstant;
+import com.example.xtream.constant.Configuration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -40,7 +39,7 @@ import java.util.List;
  * turn on check permission:
  * allow you to use @PreAuthorize, @PostAuthorize, @Secured
  */
-@Configuration
+@org.springframework.context.annotation.Configuration
 @EnableMethodSecurity(prePostEnabled = true,securedEnabled = true)
 public class SecurityFilterChainConfig {
 
@@ -68,9 +67,9 @@ public class SecurityFilterChainConfig {
                 // same origin no need Cors.
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
-                    config.setAllowedMethods(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
-                    config.setAllowedHeaders(List.of(AuthenticationConstant.CorsLevel.ACCEPT_ALL.getMessage()));
+                    config.setAllowedOrigins(List.of(Configuration.CORS_ACCEPT_ALL));
+                    config.setAllowedMethods(List.of(Configuration.CORS_ACCEPT_ALL));
+                    config.setAllowedHeaders(List.of(Configuration.CORS_ACCEPT_ALL));
                     return config;
                 }))
                 // sessionManagement is config session mode.
@@ -78,8 +77,8 @@ public class SecurityFilterChainConfig {
                 // exceptionHandling is default filter, got the implement bean for commence function.
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AuthenticationConstant.SystemEndpoint.WHITE_LIST.getMessage()).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(Configuration.WHITE_LIST).permitAll()
+                        .anyRequest().permitAll()
                 )
                 // httpBasic is an optional filter, using when app use basic authentication mechanic
                 .httpBasic(Customizer.withDefaults());

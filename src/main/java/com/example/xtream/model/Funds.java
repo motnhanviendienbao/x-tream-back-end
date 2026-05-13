@@ -1,6 +1,6 @@
 package com.example.xtream.model;
 
-import com.example.xtream.model.enums.Status;
+import com.example.xtream.model.common.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

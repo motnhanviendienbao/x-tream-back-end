@@ -1,5 +1,5 @@
 package com.example.xtream.service.impl;
-import com.example.xtream.constant.ErrorMessages;
+import com.example.xtream.constant.ErrorMessage;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.exception.custom.InvalidUsernamePasswordAuthenticationException;
 import com.example.xtream.exception.custom.UsernameExistException;
@@ -43,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResponseDTO login(String username, String password) {
         User user = checkUsernameAndPassword(username,password);
+
         return createTokenForClient(user);
     }
 
@@ -55,8 +56,11 @@ public class AuthServiceImpl implements AuthService {
      */
     @Transactional
     public ResponseDTO register (String username, String password, String code) {
-        validateUsernameAndPassword(username,password);
-        doRegister(username,password);
+        User user = new User();
+        user.setUserName(username);
+        user.setHashedPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
         return ResponseDTO.builder().build();
     }
 
@@ -72,34 +76,26 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                         .findByUserName(username).orElseThrow(
-                                ()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorMessages.Auth.INVALID_USERNAME.getMessage()));
+                                ()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorMessage.INVALID_USERNAME));
         // hash and replace pass + reset state record
         user.setHashedPassword(passwordEncoder.encode(newPassword));
         userRepository.saveAndFlush(user);
-        return ResponseDTO.builder()
-                .response("reset password success")
-                .build();
+
+        return ResponseDTO.builder().build();
     }
 
-    // sub-function
-    // login
     private User checkUsernameAndPassword(String username, String password) {
         // check username
-        try {
-            User user =
-                    userRepository
-                            .findByUserName(username)
-                            .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_USERNAME.getMessage()));
-            // check password
-            if(!passwordEncoder.matches(password,user.getHashedPassword()))
-            {
-                throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_PASSWORD.getMessage());
-            }
-            return user;
-        } catch ( InvalidUsernamePasswordAuthenticationException exception) {
-
-            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.INVALID_USERNAME_OR_PASSWORD.getMessage());
+        User user =
+                userRepository
+                        .findByUserName(username)
+                        .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException(ErrorMessage.INVALID_USERNAME));
+        // check password
+        if(!passwordEncoder.matches(password,user.getHashedPassword()))
+        {
+            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessage.INVALID_PASSWORD);
         }
+        return user;
     }
 
     private ResponseDTO createTokenForClient( User user) {
@@ -124,21 +120,4 @@ public class AuthServiceImpl implements AuthService {
             return ResponseDTO.builder().response(createdToken).build();
     }
 
-    // register
-    private void validateUsernameAndPassword(String username,String password) {
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.Auth.USERNAME_PASSWORD_IS_REQUIRE.getMessage());
-        }
-
-        if (userRepository.findByUserName(username).isPresent()) {
-            throw new UsernameExistException(ErrorMessages.Auth.USERNAME_ALREADY_EXIST.getMessage());
-        }
-    }
-
-    private void doRegister(String username, String password) {
-        User user = new User();
-        user.setUserName(username);
-        user.setHashedPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
-    }
 }

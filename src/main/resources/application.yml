@@ -19,9 +19,9 @@ spring:
 # LOG
 logging:
   level:
-    root: debug
-    org.springframework.cache: debug
-    org.springframework.security: debug
+    root: info
+    org.springframework.cache: info
+    org.springframework.security: info
 # SWAGGER
 springdoc:
   swagger-ui:

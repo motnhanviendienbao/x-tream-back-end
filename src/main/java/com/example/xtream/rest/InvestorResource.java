@@ -1,14 +1,11 @@
 package com.example.xtream.rest;
 
-import com.example.xtream.dto.request.CreateInvestorRequestDTO;
+import com.example.xtream.dto.request.CreateInvestorDTO;
 import com.example.xtream.dto.request.UpdateInvestorDetailsDTO;
 import com.example.xtream.dto.response.ResponseDTO;
-import com.example.xtream.model.enums.Status;
+import com.example.xtream.model.common.Status;
 import com.example.xtream.service.InvestorService;
-import com.example.xtream.service.impl.AuthServiceImpl;
-import com.example.xtream.service.impl.InvestorServiceImpl;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -84,7 +80,7 @@ public class InvestorResource {
      */
     @PostMapping("/add")
     public ResponseEntity<ResponseDTO> createInvestor(
-            @RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO)
+            @RequestBody @Valid CreateInvestorDTO createInvestorRequestDTO)
     {
         ResponseDTO response = investorService.createInvestor(createInvestorRequestDTO);
         return ResponseEntity.ok(response);

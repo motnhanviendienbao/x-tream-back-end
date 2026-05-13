@@ -11,7 +11,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class CreateInvestorRequestDTO {
+public class CreateInvestorDTO {
     @NotBlank
     private String city;
     private String country;

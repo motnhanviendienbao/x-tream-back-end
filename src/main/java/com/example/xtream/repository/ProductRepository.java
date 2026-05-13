@@ -18,10 +18,8 @@ public interface ProductRepository extends JpaRepository<Products,Long> {
             productGroup.productGroupShortCode as productGroupName,
             products.productName as productName
         FROM Funds funds
-        JOIN ProductGroup productGroup
-            ON funds.id = productGroup.fund.id
-        JOIN Products products
-            ON products.productGroup.id = productGroup.id
+        JOIN ProductGroup productGroup ON funds.id = productGroup.fund.id
+        JOIN Products products ON products.productGroup.id = productGroup.id
     """)
     List<ProductTreeDTO> findProductTree();
 }

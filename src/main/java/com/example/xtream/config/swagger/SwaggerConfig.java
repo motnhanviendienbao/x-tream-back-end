@@ -1,18 +1,17 @@
 package com.example.xtream.config.swagger;
 
-import com.example.xtream.constant.Swagger;
+import com.example.xtream.constant.Configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * config for swagger ui mode
  */
-@Configuration
+@org.springframework.context.annotation.Configuration
 public class SwaggerConfig {
 
     /**
@@ -22,9 +21,9 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .components(new Components().
-                        addSecuritySchemes(Swagger.SECURITY_SCHEMA, new SecurityScheme().
-                                type(SecurityScheme.Type.HTTP).scheme(Swagger.TYPE_SCHEMA)))
-                .addSecurityItem(new SecurityRequirement().addList(Swagger.SECURITY_SCHEMA));
+                        addSecuritySchemes(Configuration.SWAGGER_SECURITY_SCHEMA, new SecurityScheme().
+                                type(SecurityScheme.Type.HTTP).scheme(Configuration.SWAGGER_TYPE_SCHEMA)))
+                .addSecurityItem(new SecurityRequirement().addList(Configuration.SWAGGER_SECURITY_SCHEMA));
     }
 
     /**
@@ -33,8 +32,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi investorApis() {
         return GroupedOpenApi.builder()
-                .group(Swagger.INVESTORS_GROUP)
-                .pathsToMatch(Swagger.INVESTORS_PATH)
+                .group(Configuration.SWAGGER_INVESTORS_GROUP)
+                .pathsToMatch(Configuration.SWAGGER_INVESTORS_PATH)
                 .build();
     }
 
@@ -44,8 +43,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi authApis() {
         return GroupedOpenApi.builder()
-                .group(Swagger.AUTH_GROUP)
-                .pathsToMatch(Swagger.AUTH_PATH)
+                .group(Configuration.SWAGGER_AUTH_GROUP)
+                .pathsToMatch(Configuration.SWAGGER_AUTH_PATH)
                 .build();
     }
 }

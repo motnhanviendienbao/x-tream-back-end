@@ -1,10 +1,7 @@
 package com.example.xtream.dto.response;
 
-import com.example.xtream.model.enums.Status;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import com.example.xtream.model.common.Status;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 /**

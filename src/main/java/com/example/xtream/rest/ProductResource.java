@@ -25,7 +25,6 @@ public class ProductResource {
      * @return response contains array of product tree
      */
     @GetMapping("/tree")
-    @Secured("PRODUCT:GET")
     public ResponseEntity<ResponseDTO> productTree() {
         ResponseDTO response = productService.getProductTree();
         return ResponseEntity.ok(response);

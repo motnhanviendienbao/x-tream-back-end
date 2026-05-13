@@ -15,7 +15,6 @@ import java.util.Objects;
 /**
  * Task for worker
  */
-@Service
 public class CleanupTTL implements Runnable{
 
     /**
@@ -37,7 +36,6 @@ public class CleanupTTL implements Runnable{
      * constructor
      * @param userCache cache from outside
      */
-    @Autowired
     public CleanupTTL( BasicUserCache userCache) {
         logger.info("[NgocTu-Server]: Initial Worker Clean Up . . .");
         this.userCache = userCache;

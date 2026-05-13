@@ -15,9 +15,9 @@ import java.util.Collection;
  * User detail is going to be assigned for principal in Authentication object if auth success.
  * if the forcePrincipalAsString flag was set to true, principal was username in user detail
  */
-public class AdminUserDetail extends UserBase {
+public class UserDetail extends UserBase {
 
-    public AdminUserDetail(String tokenID, @Nullable String tokenValue, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetail(String tokenID, @Nullable String tokenValue, Collection<? extends GrantedAuthority> authorities) {
         super(tokenID, tokenValue, authorities);
     }
 }

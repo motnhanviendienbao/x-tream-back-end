@@ -1,7 +1,8 @@
 package com.example.xtream.model;
 
 import com.example.xtream.config.audit.Auditable;
-import com.example.xtream.model.enums.Status;
+import com.example.xtream.model.common.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,10 +32,12 @@ public class InvestorAccount extends Auditable {
     @Column(name = "status", length = 1)
     private Status status = Status.A;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Products product;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "investor_id")
     private Investor investor;

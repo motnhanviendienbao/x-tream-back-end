@@ -1,13 +1,13 @@
 package com.example.xtream.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
-public class ResetPasswordRequestDTO {
+public class RegisterDTO {
     @NotBlank
     private String username;
     @NotBlank
-    private String newPassword;
+    private String password;
+    @NotBlank
+    private String code;
 }
