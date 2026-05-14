@@ -1,6 +1,6 @@
 package com.example.xtream.constant;
 
-public final class Configuration {
+public final class Configurations {
     public static final String CORS_ACCEPT_ALL = "*";
     public static final String[] WHITE_LIST = {"/auth/login","/auth/register","/swagger-ui.html","/swagger-ui/**","/v3/api-docs","/v3/api-docs/**"};
     public static final String SWAGGER_SECURITY_SCHEMA = "basicAuth";
@@ -9,6 +9,11 @@ public final class Configuration {
     public static final String SWAGGER_INVESTORS_GROUP = "Investors";
     public static final String SWAGGER_AUTH_PATH = "/auth/**";
     public static final String SWAGGER_AUTH_GROUP = "Auth";
+    public static final String AUTHORIZE_HEADER = "x-verify";
+    public static final String AUTHORIZE_SCHEMA_CUSTOM = "check:";
+
+
+
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.xtream.security.basicAuthen.modelUserDetail;
+package com.example.xtream.security.basicAuthen.userDetail;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;

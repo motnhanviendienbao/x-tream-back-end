@@ -1,6 +1,6 @@
 package com.example.xtream.service.impl;
 
-import com.example.xtream.constant.ErrorMessage;
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.dto.request.CreateInvestorDTO;
 import com.example.xtream.dto.request.InvestorInvestmentDTO;
 import com.example.xtream.dto.request.UpdateInvestorDetailsDTO;
@@ -62,12 +62,12 @@ public class InvestorServiceImpl implements InvestorService {
         // Check exist investorId
         investorId.ifPresent(integer -> investorRepository
                 .findById(integer.longValue())
-                .orElseThrow(() -> new RuntimeException(ErrorMessage.INVESTOR_ID_NOT_FOUND)));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND)));
 
         // Check exist investorAccountId
         investorAccountId.ifPresent(integer -> investorAccountRepository
                 .findById(integer.longValue())
-                .orElseThrow(() -> new RuntimeException(ErrorMessage.INVESTOR_ACCOUNT_ID_NOT_FOUND)));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ACCOUNT_ID_NOT_FOUND)));
 
         // Pagination
         Page<InvestorSearchDTO> pageOfInvestors = investorRepository
@@ -134,7 +134,7 @@ public class InvestorServiceImpl implements InvestorService {
     {
         Investor investor = investorRepository
                 .findById(updateInvestorDetailsDTO.getInvestorId())
-                .orElseThrow(()-> new RuntimeException(ErrorMessage.INVESTOR_ID_NOT_FOUND));
+                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND));
 
         investor.setEmail(updateInvestorDetailsDTO.getEmail());
         investor.getInvestorAddress().setCity(updateInvestorDetailsDTO.getCity());
@@ -179,7 +179,7 @@ public class InvestorServiceImpl implements InvestorService {
         // Check exist investorId
         investorIdOp.ifPresent(integer -> investorRepository
                 .findById(integer)
-                .orElseThrow(() -> new RuntimeException(ErrorMessage.INVESTOR_ID_NOT_FOUND)));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND)));
         // Pagination
         Page<InvestorAccountsDTO> pageOfInvestorAccounts = investorAccountRepository.findAccountsByInvestorId(investorId,pageable);
 
@@ -195,38 +195,38 @@ public class InvestorServiceImpl implements InvestorService {
 
     private void validateUniqueness(CreateInvestorDTO dto) {
         investorRepository.findByEmail(dto.getEmail()).ifPresent(existing -> {
-            throw new RuntimeException(ErrorMessage.EMAIL_ALREADY_EXISTS);
+            throw new RuntimeException(ErrorMessages.EMAIL_ALREADY_EXISTS);
         });
         if (dto.getTaxFileNumber() != null && !dto.getTaxFileNumber().isBlank()) {
             investorRepository.findByTaxFileNumber(dto.getTaxFileNumber()).ifPresent(existing -> {
-                throw new RuntimeException(ErrorMessage.TFN_ALREADY_EXISTS);
+                throw new RuntimeException(ErrorMessages.TFN_ALREADY_EXISTS);
             });
         }
     }
 
     private Products resolveProduct(String productId) {
         if (productId == null || productId.isBlank()) {
-            throw new RuntimeException(ErrorMessage.PRODUCT_NOT_FOUND);
+            throw new RuntimeException(ErrorMessages.PRODUCT_NOT_FOUND);
         }
         return productRepository.findById(Long.valueOf(productId))
-                .orElseThrow(() -> new RuntimeException(ErrorMessage.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.PRODUCT_NOT_FOUND));
     }
 
     private List<Investments> resolveAndValidateInvestments(List<InvestorInvestmentDTO> investmentDTOs) {
         if (investmentDTOs == null || investmentDTOs.isEmpty()) {
-            throw new RuntimeException(ErrorMessage.INVESTMENTS_REQUIRED);
+            throw new RuntimeException(ErrorMessages.INVESTMENTS_REQUIRED);
         }
 
         int totalStrategy = investmentDTOs.stream()
                 .mapToInt(InvestorInvestmentDTO::getInvestmentStrategy)
                 .sum();
         if (totalStrategy != 100) {
-            throw new RuntimeException(ErrorMessage.INVESTMENT_STRATEGY_MUST_TOTAL_100);
+            throw new RuntimeException(ErrorMessages.INVESTMENT_STRATEGY_MUST_TOTAL_100);
         }
 
         return investmentDTOs.stream()
                 .map(dto -> investmentRepository.findById((long) dto.getInvestmentNameOrId())
-                        .orElseThrow(() -> new RuntimeException(ErrorMessage.INVESTMENT_NOT_FOUND)))
+                        .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTMENT_NOT_FOUND)))
                 .toList();
     }
 

@@ -1,15 +1,9 @@
 package com.example.xtream.security.basicAuthen.cache;
 
-import com.example.xtream.security.basicAuthen.modelUserDetail.UserBase;
-import lombok.RequiredArgsConstructor;
+import com.example.xtream.security.basicAuthen.userDetail.UserBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Objects;
 
 /**

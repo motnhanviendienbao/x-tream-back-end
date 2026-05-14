@@ -3,7 +3,7 @@ import com.example.xtream.dto.request.RegisterDTO;
 import com.example.xtream.dto.request.LoginDTO;
 import com.example.xtream.dto.request.ResetPasswordDTO;
 import com.example.xtream.dto.response.ResponseDTO;
-import com.example.xtream.service.impl.AuthServiceImpl;
+import com.example.xtream.service.SystemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
-public class AuthResource {
+public class SystemResource {
 
-    private final AuthServiceImpl authServiceImpl;
+    private final SystemService systemService;
 
     /**
      * Check Authentication
@@ -27,7 +27,7 @@ public class AuthResource {
      */
     @PostMapping("/login")
     public ResponseEntity<ResponseDTO> login(@RequestBody @Valid LoginDTO loginRequest ) {
-        return ResponseEntity.ok(authServiceImpl.login(loginRequest.getUsername(),loginRequest.getPassword()));
+        return ResponseEntity.ok(systemService.login(loginRequest.getUsername(),loginRequest.getPassword()));
     }
 
     /**
@@ -38,7 +38,7 @@ public class AuthResource {
      */
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO request) {
-        return ResponseEntity.ok(authServiceImpl.register(request.getUsername(), request.getPassword(), request.getCode()));
+        return ResponseEntity.ok(systemService.register(request.getUsername(), request.getPassword(), request.getCode()));
     }
 
     /**
@@ -49,7 +49,7 @@ public class AuthResource {
      */
     @PostMapping("/reset-password")
     public ResponseEntity<ResponseDTO> resetPassword(@RequestBody @Valid ResetPasswordDTO request) {
-        return ResponseEntity.ok(authServiceImpl.resetPassword(request.getUsername(),request.getNewPassword()));
+        return ResponseEntity.ok(systemService.resetPassword(request.getUsername(),request.getNewPassword()));
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.example.xtream.config.swagger;
 
-import com.example.xtream.constant.Configuration;
+import com.example.xtream.constant.Configurations;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -21,9 +21,9 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .components(new Components().
-                        addSecuritySchemes(Configuration.SWAGGER_SECURITY_SCHEMA, new SecurityScheme().
-                                type(SecurityScheme.Type.HTTP).scheme(Configuration.SWAGGER_TYPE_SCHEMA)))
-                .addSecurityItem(new SecurityRequirement().addList(Configuration.SWAGGER_SECURITY_SCHEMA));
+                        addSecuritySchemes(Configurations.SWAGGER_SECURITY_SCHEMA, new SecurityScheme().
+                                type(SecurityScheme.Type.HTTP).scheme(Configurations.SWAGGER_TYPE_SCHEMA)))
+                .addSecurityItem(new SecurityRequirement().addList(Configurations.SWAGGER_SECURITY_SCHEMA));
     }
 
     /**
@@ -32,8 +32,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi investorApis() {
         return GroupedOpenApi.builder()
-                .group(Configuration.SWAGGER_INVESTORS_GROUP)
-                .pathsToMatch(Configuration.SWAGGER_INVESTORS_PATH)
+                .group(Configurations.SWAGGER_INVESTORS_GROUP)
+                .pathsToMatch(Configurations.SWAGGER_INVESTORS_PATH)
                 .build();
     }
 
@@ -43,8 +43,8 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi authApis() {
         return GroupedOpenApi.builder()
-                .group(Configuration.SWAGGER_AUTH_GROUP)
-                .pathsToMatch(Configuration.SWAGGER_AUTH_PATH)
+                .group(Configurations.SWAGGER_AUTH_GROUP)
+                .pathsToMatch(Configurations.SWAGGER_AUTH_PATH)
                 .build();
     }
 }

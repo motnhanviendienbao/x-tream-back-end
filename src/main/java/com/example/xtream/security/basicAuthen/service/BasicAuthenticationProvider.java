@@ -68,7 +68,7 @@ import java.util.Set;
  * SecurityContextHolderStrategy = where the SecurityContext is actually stored and mutated
  * One thread can only have ONE SecurityContext at a time.
  */
-@Service
+//@Service
 @RequiredArgsConstructor
 @Getter
 @Setter
@@ -82,7 +82,7 @@ public final class BasicAuthenticationProvider extends AbstractUserDetailsAuthen
     }
 
     @Override
-    @Autowired
+//    @Autowired
     public void setUserCache(UserCache userCache) {
         super.setUserCache(userCache);
     }

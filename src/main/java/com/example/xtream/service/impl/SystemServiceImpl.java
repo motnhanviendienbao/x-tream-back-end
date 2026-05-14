@@ -1,13 +1,12 @@
 package com.example.xtream.service.impl;
-import com.example.xtream.constant.ErrorMessage;
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.exception.custom.InvalidUsernamePasswordAuthenticationException;
-import com.example.xtream.exception.custom.UsernameExistException;
-import com.example.xtream.model.Token;
 import com.example.xtream.model.User;
 import com.example.xtream.repository.TokenRepository;
 import com.example.xtream.repository.UserRepository;
-import com.example.xtream.service.AuthService;
+import com.example.xtream.service.TokenAuthenticationService;
+import com.example.xtream.service.SystemService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,21 +15,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import java.time.OffsetDateTime;
-import java.util.Base64;
-import java.util.UUID;
 
 /**
  * Auth resource service
  */
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService {
+public class SystemServiceImpl implements SystemService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-    private static final Logger logger = LogManager.getLogger(AuthServiceImpl.class);
+    private final TokenAuthenticationService tokenAuthenticationService;
+    private static final Logger logger = LogManager.getLogger(SystemServiceImpl.class);
 
     /**
      * Auth the user
@@ -43,8 +40,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public ResponseDTO login(String username, String password) {
         User user = checkUsernameAndPassword(username,password);
-
-        return createTokenForClient(user);
+        String token = tokenAuthenticationService.createToken(username);
+        return ResponseDTO.builder().response(token).build();
     }
 
     /**
@@ -76,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                         .findByUserName(username).orElseThrow(
-                                ()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorMessage.INVALID_USERNAME));
+                                ()-> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorMessages.INVALID_USERNAME));
         // hash and replace pass + reset state record
         user.setHashedPassword(passwordEncoder.encode(newPassword));
         userRepository.saveAndFlush(user);
@@ -89,35 +86,12 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                         .findByUserName(username)
-                        .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException(ErrorMessage.INVALID_USERNAME));
+                        .orElseThrow(() -> new InvalidUsernamePasswordAuthenticationException(ErrorMessages.INVALID_USERNAME));
         // check password
         if(!passwordEncoder.matches(password,user.getHashedPassword()))
         {
-            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessage.INVALID_PASSWORD);
+            throw new InvalidUsernamePasswordAuthenticationException(ErrorMessages.INVALID_PASSWORD);
         }
         return user;
     }
-
-    private ResponseDTO createTokenForClient( User user) {
-            // old user means have token assign for user, just get it up to reuse
-            Token tokenCustomer =
-                    tokenRepository
-                            .findById(user.getId())
-                            .orElseGet(() ->
-                            {
-                                // new user means generate new token assign for this user
-                                Token tk = new Token();
-                                tk.setValue(UUID.randomUUID().toString()
-                                        .replace("-", ""));
-                                tk.setExpiration(OffsetDateTime.now().plusDays(1));
-                                tk.setCustomerId(user.getId());
-                                tokenRepository.saveAndFlush(tk);
-                                return tk;
-                            });
-
-            String rawToken = tokenCustomer.getId() + ":" + tokenCustomer.getValue();
-            String createdToken = Base64.getEncoder().encodeToString(rawToken.getBytes());
-            return ResponseDTO.builder().response(createdToken).build();
-    }
-
 }

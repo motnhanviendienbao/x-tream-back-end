@@ -1,6 +1,6 @@
 package com.example.xtream.constant;
 
-public final class ErrorMessage {
+public final class ErrorMessages {
     public static final String INVALID_USERNAME = "Invalid Username";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String USERNAME_ALREADY_EXIST = "USERNAME_ALREADY_EXIST";

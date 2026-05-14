@@ -1,14 +1,19 @@
 package com.example.xtream.security;
 
-import com.example.xtream.constant.Configuration;
+import com.example.xtream.constant.Configurations;
+import com.example.xtream.security.jwtAuthen.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import java.util.List;
 
@@ -39,9 +44,12 @@ import java.util.List;
  * turn on check permission:
  * allow you to use @PreAuthorize, @PostAuthorize, @Secured
  */
-@org.springframework.context.annotation.Configuration
+@Configuration
 @EnableMethodSecurity(prePostEnabled = true,securedEnabled = true)
+@RequiredArgsConstructor
 public class SecurityFilterChainConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * Config security chain for authentication and authorize
@@ -67,21 +75,23 @@ public class SecurityFilterChainConfig {
                 // same origin no need Cors.
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of(Configuration.CORS_ACCEPT_ALL));
-                    config.setAllowedMethods(List.of(Configuration.CORS_ACCEPT_ALL));
-                    config.setAllowedHeaders(List.of(Configuration.CORS_ACCEPT_ALL));
+                    config.setAllowedOrigins(List.of(Configurations.CORS_ACCEPT_ALL));
+                    config.setAllowedMethods(List.of(Configurations.CORS_ACCEPT_ALL));
+                    config.setAllowedHeaders(List.of(Configurations.CORS_ACCEPT_ALL));
                     return config;
                 }))
                 // sessionManagement is config session mode.
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // exceptionHandling is default filter, got the implement bean for commence function.
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
+                // config filter for url api with authorize filter
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(Configuration.WHITE_LIST).permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers(Configurations.WHITE_LIST).permitAll()
+                        .anyRequest().authenticated()
                 )
                 // httpBasic is an optional filter, using when app use basic authentication mechanic
-                .httpBasic(Customizer.withDefaults());
+                //.httpBasic(Customizer.withDefaults());
+                .addFilterBefore(jwtAuthenticationFilter, AuthenticationFilter.class);
 
         return http.build();
     }

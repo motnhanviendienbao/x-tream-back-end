@@ -11,6 +11,8 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: update
+  app:
+    private: "4832u4o23u4234u2#Y#U#I#O#IO#UO#UOIO#U#Uknbkbcksc sncjhsbcshcslvsvlslvs"
 # REDIS
   data:
     redis:
@@ -26,6 +28,7 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
 
 
 

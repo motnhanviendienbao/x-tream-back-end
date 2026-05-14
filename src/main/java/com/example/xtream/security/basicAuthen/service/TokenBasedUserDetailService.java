@@ -1,13 +1,12 @@
 package com.example.xtream.security.basicAuthen.service;
 
-import com.example.xtream.constant.ErrorMessage;
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.model.Token;
 import com.example.xtream.repository.TokenRepository;
-import com.example.xtream.security.basicAuthen.modelUserDetail.UserDetail;
+import com.example.xtream.security.basicAuthen.userDetail.UserDetail;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,7 +44,7 @@ public final class TokenBasedUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String tokenID) throws UsernameNotFoundException {
         logger.info("[NGOC TU SERVER]: [Load User By Username Function] Run Check With TokenID Is: {}",tokenID);
-        Token token = tokenRepository.findById(Long.valueOf(tokenID)).orElseThrow(()-> new UsernameNotFoundException(ErrorMessage.TOKEN_CREDENTIAL_NOT_FOUND));
+        Token token = tokenRepository.findById(Long.valueOf(tokenID)).orElseThrow(()-> new UsernameNotFoundException(ErrorMessages.TOKEN_CREDENTIAL_NOT_FOUND));
         return new UserDetail(token.getId().toString(),token.getValue(), Collections.emptyList() );
     }
 }
