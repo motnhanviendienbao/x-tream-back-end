@@ -1,7 +1,7 @@
 package com.example.xtream.security;
 
 import com.example.xtream.constant.Configurations;
-import com.example.xtream.security.jwtAuthen.filter.JwtAuthenticationFilter;
+//import com.example.xtream.security.jwtAuthen.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +49,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityFilterChainConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * Config security chain for authentication and authorize
@@ -83,15 +83,15 @@ public class SecurityFilterChainConfig {
                 // sessionManagement is config session mode.
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // exceptionHandling is default filter, got the implement bean for commence function.
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
-                // config filter for url api with authorize filter
+//                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
+                // config filter for url api with AuthenticationFilter
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(Configurations.WHITE_LIST).permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().permitAll()
+                );
                 // httpBasic is an optional filter, using when app use basic authentication mechanic
                 //.httpBasic(Customizer.withDefaults());
-                .addFilterBefore(jwtAuthenticationFilter, AuthenticationFilter.class);
+//                .addFilterBefore(jwtAuthenticationFilter, AuthenticationFilter.class);
 
         return http.build();
     }

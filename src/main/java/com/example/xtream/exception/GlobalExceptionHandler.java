@@ -1,11 +1,10 @@
 package com.example.xtream.exception;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.exception.custom.AdminForceResetPasswordException;
-import com.example.xtream.exception.custom.InvalidUsernamePasswordAuthenticationException;
-import com.example.xtream.exception.custom.SessionExpireException;
 import com.example.xtream.exception.custom.TooManyAttemptLoginException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,12 +25,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ResponseDTO> handleAllExceptions(Exception ex) {
-        logger.info("[NGOC TU SERVER] System Error: ", ex);
+        logger.info("System Error: ", ex);
         ResponseDTO errorResponse = ResponseDTO.builder()
                         .error(ex.getMessage())
                         .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         // 500 abstract error
+    }
+
+    /**
+     * Format error response for all exception
+     * @param ex ex
+     * @return response with ResponseDTO at body and status code
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public final ResponseEntity<ResponseDTO> handleAuthenticationException(Exception ex) {
+        logger.info("System Error: ", ex);
+        ResponseDTO errorResponse = ResponseDTO.builder()
+                .error(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        // 401 unauthorized
     }
 
     /**
@@ -41,7 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(AccessDeniedException ex) {
-        logger.info("[NGOC TU SERVER]: AccessDeniedException", ex);
+        logger.info("AccessDeniedException", ex);
         ResponseDTO errorResponse = ResponseDTO.builder()
                 .error(ex.getMessage())
                 .build();
@@ -49,20 +63,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         // 403 do not have permission
     }
 
-    /**
-     * Format error response for SessionExpireException
-     * @param ex ex
-     * @return response with ResponseDTO at body and status code
-     */
-    @ExceptionHandler(SessionExpireException.class)
-    public ResponseEntity<ResponseDTO> handleResponseStatus(SessionExpireException ex) {
-        logger.info("[NGOC TU SERVER]: SessionExpireException", ex);
-        ResponseDTO errorResponse = ResponseDTO.builder()
-                .error(ex.getMessage())
-                .build();
-        return ResponseEntity.status(440).body(errorResponse);
-        // 440 Login Time-out
-    }
 
     /**
      * Format error response for AdminForceResetPasswordException
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(AdminForceResetPasswordException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(AdminForceResetPasswordException ex) {
-        logger.info("[NGOC TU SERVER]: AdminForceResetPasswordException", ex);
+        logger.info("AdminForceResetPasswordException", ex);
         ResponseDTO errorResponse = ResponseDTO.builder()
                 .error(ex.getMessage())
                 .build();
@@ -86,27 +86,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(TooManyAttemptLoginException.class)
     public ResponseEntity<ResponseDTO> handleResponseStatus(TooManyAttemptLoginException ex) {
-        logger.info("[NGOC TU SERVER]: TooManyAttemptLoginException", ex);
+        logger.info("TooManyAttemptLoginException", ex);
         ResponseDTO errorResponse = ResponseDTO.builder()
                 .error(ex.getMessage())
                 .build();
         return ResponseEntity.status(429).body(errorResponse);
         // 429 Too Many Requests
     }
-
-    /**
-     * Format error response for InvalidUsernamePasswordAuthenticationException
-     * @param ex ex
-     * @return response with ResponseDTO at body and status code
-     */
-    @ExceptionHandler(InvalidUsernamePasswordAuthenticationException.class)
-    public ResponseEntity<ResponseDTO> handleResponseStatus(InvalidUsernamePasswordAuthenticationException ex) {
-        logger.info("[NGOC TU SERVER]: InvalidUsernamePasswordAuthenticationException", ex);
-        ResponseDTO errorResponse = ResponseDTO.builder()
-                .error(ex.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        // 401 Unauthorized
-    }
-
 }

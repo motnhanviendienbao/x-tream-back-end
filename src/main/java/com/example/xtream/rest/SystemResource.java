@@ -1,4 +1,5 @@
 package com.example.xtream.rest;
+import com.example.xtream.dto.request.GetAccessTokenDTO;
 import com.example.xtream.dto.request.RegisterDTO;
 import com.example.xtream.dto.request.LoginDTO;
 import com.example.xtream.dto.request.ResetPasswordDTO;
@@ -38,7 +39,7 @@ public class SystemResource {
      */
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO request) {
-        return ResponseEntity.ok(systemService.register(request.getUsername(), request.getPassword(), request.getCode()));
+        return ResponseEntity.ok(systemService.register(request.getUsername(), request.getPassword(), request.getRole()));
     }
 
     /**
@@ -52,6 +53,16 @@ public class SystemResource {
         return ResponseEntity.ok(systemService.resetPassword(request.getUsername(),request.getNewPassword()));
     }
 
+    /**
+     * Reset password for user by admin
+     *
+     * @param request   information
+     * @return  status
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseDTO> getAccessToken(@RequestBody @Valid GetAccessTokenDTO request) {
+        return ResponseEntity.ok(systemService.getAccessToken(request.getRefresh()));
+    }
     /**
      * Test access resource
      *

@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
 public interface TokenAuthenticationService {
-    String createToken(String username);
+    String createToken(Long userId, String userType);
     Boolean validateToken(String token);
     Jws<Claims> parseToken( String token);
 

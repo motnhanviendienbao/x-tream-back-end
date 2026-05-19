@@ -1,10 +1,12 @@
 package com.example.xtream.security.basicAuthen.service;
 
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.security.basicAuthen.cache.BasicUserCache;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -72,6 +74,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Lazy
 public final class BasicAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
@@ -90,15 +93,15 @@ public final class BasicAuthenticationProvider extends AbstractUserDetailsAuthen
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         if (authentication.getCredentials() == null) {
-            logger.info("[NGOC TU SERVER]: Failed To Authenticate Since No Credentials Provided");
+            logger.info("Failed To Authenticate Since No Credentials Provided");
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         } else {
-            logger.info("[NGOC TU SERVER]: Authentication Principal( As Username/Id ): " + authentication.getPrincipal());
-            logger.info("[NGOC TU SERVER]: Raw Authentication Credentials( As Password/Value ): " + authentication.getCredentials());
-            logger.info("[NGOC TU SERVER]: Raw Authentication PresentedPassword: " + authentication.getCredentials().toString());
-            logger.info("[NGOC TU SERVER]: Raw Authentication Granted Authorities( As Permission):" + authentication.getAuthorities().size());
-            logger.info("[NGOC TU SERVER]: Authentication Object Status This Time ( Processing ): " + authentication.isAuthenticated());
-            logger.info("[NGOC TU SERVER]: Authentication Object: " + authentication.toString() );
+            logger.info("Authentication Principal( As Username/Id ): " + authentication.getPrincipal());
+            logger.info("Raw Authentication Credentials( As Password/Value ): " + authentication.getCredentials());
+            logger.info("Raw Authentication PresentedPassword: " + authentication.getCredentials().toString());
+            logger.info("Raw Authentication Granted Authorities( As Permission):" + authentication.getAuthorities().size());
+            logger.info("Authentication Object Status This Time ( Processing ): " + authentication.isAuthenticated());
+            logger.info("Authentication Object: " + authentication);
             String presentedPassword = authentication.getCredentials().toString();
             String userDetailsPassword = userDetails.getPassword();
             // Compare Password Got Process Here:
@@ -107,7 +110,7 @@ public final class BasicAuthenticationProvider extends AbstractUserDetailsAuthen
             if (!(Objects.nonNull(presentedPassword)
                     && Objects.nonNull(userDetailsPassword)
                     && presentedPassword.equals(userDetailsPassword))) {
-                logger.debug("[NGOC TU SERVER]: Failed To Authenticate Since Password Does Not Match Stored Value");
+                logger.debug("Failed To Authenticate Since Password Does Not Match Stored Value");
                 throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
             }
         }
@@ -119,8 +122,7 @@ public final class BasicAuthenticationProvider extends AbstractUserDetailsAuthen
         try {
             UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);
             if (loadedUser == null) {
-                throw new InternalAuthenticationServiceException(
-                        "UserDetailsService returned null, which is an interface contract violation");
+                throw new InternalAuthenticationServiceException(ErrorMessages.USER_DETAIL_IS_NULL);
             }
             return loadedUser;
         }

@@ -49,6 +49,14 @@ public class ResponseDTO
      */
     public Integer currentPage;
 
+    /**
+     * accessToken
+     **/
+    public Object accessToken;
 
+    /**
+     * refreshToken
+     **/
+    public Object refreshToken;
 }
 

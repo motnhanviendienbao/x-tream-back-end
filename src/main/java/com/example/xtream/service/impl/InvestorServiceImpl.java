@@ -33,7 +33,6 @@ public class InvestorServiceImpl implements InvestorService {
     private final ProductRepository productRepository;
     private final InvestmentRepository investmentRepository;
     private final InvestorAccountInvestmentRepository investorAccountInvestmentRepository;
-
     public static final Logger logger = LogManager.getLogger(InvestorServiceImpl.class);
 
     /**
@@ -51,6 +50,7 @@ public class InvestorServiceImpl implements InvestorService {
      * @param pageable  pageable
      * @return List of items
      */
+
     @Override
     @Transactional
     public ResponseDTO searchInvestors(Optional<Integer> investorId, Optional<Integer> investorAccountId,
@@ -60,12 +60,14 @@ public class InvestorServiceImpl implements InvestorService {
                                        Optional<String> postcode, Pageable pageable)
     {
         // Check exist investorId
-        investorId.ifPresent(integer -> investorRepository
+        investorId
+                .ifPresent(integer -> investorRepository
                 .findById(integer.longValue())
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND)));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND)));
 
         // Check exist investorAccountId
-        investorAccountId.ifPresent(integer -> investorAccountRepository
+        investorAccountId
+                .ifPresent(integer -> investorAccountRepository
                 .findById(integer.longValue())
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ACCOUNT_ID_NOT_FOUND)));
 
@@ -73,7 +75,6 @@ public class InvestorServiceImpl implements InvestorService {
         Page<InvestorSearchDTO> pageOfInvestors = investorRepository
                         .findAllByMultiConditions(investorId,investorAccountId,investorEmail
                                 ,investorName,investorStatus,activeAccountOnly,from,to,postcode,pageable);
-
 
         return ResponseDTO
                 .builder()
@@ -114,7 +115,9 @@ public class InvestorServiceImpl implements InvestorService {
 
         createInvestmentAllocations(account, dto.getInvestments(), investments);
 
-        return ResponseDTO.builder().response(investor.getId()).build();
+        return ResponseDTO
+                .builder()
+                .build();
     }
 
     @Override
@@ -123,9 +126,12 @@ public class InvestorServiceImpl implements InvestorService {
     {
         Investor investor = investorRepository
                 .findById((investorId))
-                .orElseThrow(()-> new RuntimeException("investor not exist"));
+                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
 
-        return ResponseDTO.builder().response(investor).build();
+        return ResponseDTO
+                .builder()
+                .response(investor)
+                .build();
     }
 
     @Override
@@ -134,7 +140,7 @@ public class InvestorServiceImpl implements InvestorService {
     {
         Investor investor = investorRepository
                 .findById(updateInvestorDetailsDTO.getInvestorId())
-                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND));
+                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
 
         investor.setEmail(updateInvestorDetailsDTO.getEmail());
         investor.getInvestorAddress().setCity(updateInvestorDetailsDTO.getCity());
@@ -157,7 +163,7 @@ public class InvestorServiceImpl implements InvestorService {
         // todo: required hash this field in db and decrypt when load up
         investor.setTaxFileNumber(updateInvestorDetailsDTO.getTaxFileNumber());
         investor.setTitle(updateInvestorDetailsDTO.getTitle());
-
+        logger.info("Investor Update Success");
         return ResponseDTO.builder().build();
     }
 
@@ -166,20 +172,24 @@ public class InvestorServiceImpl implements InvestorService {
     public ResponseDTO getInvestorAccountsByInvestorId(Long investorId,Pageable pageable) {
         Investor investor = investorRepository
                 .findById(investorId)
-                .orElseThrow(()-> new RuntimeException("Investor Not Found"));
+                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
 
         ResponseDTO accounts = searchInvestorAccounts(investorId,pageable);
 
-        return ResponseDTO.builder().response(accounts).build();
+        return ResponseDTO
+                .builder()
+                .response(accounts)
+                .build();
     }
 
     public ResponseDTO searchInvestorAccounts(Long investorId ,Pageable pageable)
     {
         Optional<Long> investorIdOp = Optional.of(investorId);
         // Check exist investorId
-        investorIdOp.ifPresent(integer -> investorRepository
+        investorIdOp
+                .ifPresent(integer -> investorRepository
                 .findById(integer)
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ID_NOT_FOUND)));
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND)));
         // Pagination
         Page<InvestorAccountsDTO> pageOfInvestorAccounts = investorAccountRepository.findAccountsByInvestorId(investorId,pageable);
 

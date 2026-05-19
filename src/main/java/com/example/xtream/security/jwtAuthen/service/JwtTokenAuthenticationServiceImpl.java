@@ -1,5 +1,7 @@
 package com.example.xtream.security.jwtAuthen.service;
 
+import com.example.xtream.constant.Configurations;
+import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.service.TokenAuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
@@ -12,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -27,19 +30,20 @@ public class JwtTokenAuthenticationServiceImpl implements TokenAuthenticationSer
 
     private final ObjectMapper objectMapper;
     @Value("${spring.app.private}")
-    private String privateKey;
+    private  String privateKey;
+
     private final static Logger logger = LogManager.getLogger(JwtTokenAuthenticationServiceImpl.class);
 
-    public String createToken(final String username) {
+    public String createToken(final Long userId, final String userType) {
         try {
             // step 1: prepare payload.
             Map<String, Object> tokenData = new HashMap<>();
-            tokenData.put("clientType", "user");
-            tokenData.put("username", username);
-            tokenData.put("token_create_date", LocalDateTime.now());
+            tokenData.put(Configurations.TOKEN_PAYLOAD_KEY_2, userType);
+            tokenData.put(Configurations.TOKEN_PAYLOAD_KEY_1, userId);
+            tokenData.put(Configurations.TOKEN_PAYLOAD_KEY_3, LocalDateTime.now());
             // step 2: prepare expiration
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, 15);
+            calendar.add(Calendar.MINUTE, Configurations.TOKEN_EXPIRE_PERIOD);
             // step 3: get private key
             SecretKey secKey = Keys.hmacShaKeyFor(privateKey.getBytes());
 
@@ -70,7 +74,12 @@ public class JwtTokenAuthenticationServiceImpl implements TokenAuthenticationSer
             // passed all validate
             flag = true;
 
-        } catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SecurityException
+
+        }
+        catch (ExpiredJwtException e){
+            throw new CredentialsExpiredException(e.getMessage());
+        }
+        catch (MalformedJwtException | UnsupportedJwtException | SecurityException
                  | IllegalArgumentException e) {
             logger.error(e.getMessage());
         }
@@ -92,8 +101,13 @@ public class JwtTokenAuthenticationServiceImpl implements TokenAuthenticationSer
                     .build();
             // parse jwt process
             return jwtParser.parseSignedClaims(token);
-        } catch (ExpiredJwtException | UnsupportedJwtException
-                 | MalformedJwtException | IllegalArgumentException e) {
+        }
+        catch (ExpiredJwtException ex)
+        {
+            logger.error("Token Expire token: {}", ex.getMessage());
+            throw new CredentialsExpiredException(ex.getMessage());
+        }
+        catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
             logger.error("Error during parsing token: {}", e);
             return null;
         }

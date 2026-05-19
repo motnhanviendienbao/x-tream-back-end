@@ -1,5 +1,6 @@
 package com.example.xtream.security.jwtAuthen.token;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

@@ -20,4 +20,6 @@ public class User extends Auditable {
     private String userName;
     @Column(name = "reset_password", nullable = true)
     private Boolean isResetPassword;
+    @Column(name = "role", nullable = false)
+    private String role;
 }

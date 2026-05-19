@@ -1,15 +1,12 @@
 package com.example.xtream.dto.request;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+import lombok.Getter;
 @Data
-public class InvestorInvestmentDTO {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class GetAccessTokenDTO {
     @NotBlank
-    private int investmentNameOrId;
-    @NotBlank
-    private int investmentStrategy;
-
-
+    public String refresh;
 }

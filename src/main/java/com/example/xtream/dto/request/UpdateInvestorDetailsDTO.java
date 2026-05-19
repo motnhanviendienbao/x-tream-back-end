@@ -1,13 +1,16 @@
 package com.example.xtream.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDate;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateInvestorDetailsDTO {
-    @NotBlank
+    @NotNull
     private Long investorId;
     @NotBlank
     private String city;
@@ -15,7 +18,6 @@ public class UpdateInvestorDetailsDTO {
     @NotBlank
     private String district;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotBlank
     private LocalDate dob;
     @Email
     private String email;

@@ -46,23 +46,23 @@ public class CleanupTTL implements Runnable{
                 for (String var2 : this.userCache.getCache().keySet()) {
                     // Todo: it is possible to be race condition
                     UserBase var3 = (UserBase) this.userCache.getCache().get(var2);
-                    logger.info("[NgocTu-Server]: Thread clean up run with key {} - value {}", var2, var3);
-                    logger.info("[NgocTu-Server]: Thread clean up run with username {} - password {} - author {}", var3.getUsername(), var3.getPassword(), var3.getAuthorities());
+                    logger.info("Thread clean up run with key {} - value {}", var2, var3);
+                    logger.info("Thread clean up run with username {} - password {} - author {}", var3.getUsername(), var3.getPassword(), var3.getAuthorities());
 
-                    if (Objects.nonNull(var2) && Objects.nonNull(var3) && var3.isExpire()) {
+                    if (Objects.nonNull(var2) && var3.isExpire()) {
                         synchronized (this.userCache.getLock()) {
                             this.userCache.getCache().remove(var2);
                         }
-                        logger.info("[NgocTu-Server]: Thread clean up success key {} - value {}", var2, var3);
+                        logger.info("Thread clean up success key {} - value {}", var2, var3);
                     }
                 }
                 // todo: this test for 1 minute
-                logger.info("[NgocTu-Server]: Thread clean up sleep 1 minute");
-                logger.info("[NgocTu-Server]: Cache size notify from Thread Worker: {}",this.userCache.getCache().size());
+                logger.info("Thread clean up sleep 1 minute");
+                logger.info("Cache size notify from Thread Worker: {}",this.userCache.getCache().size());
                 Thread.sleep(30 * 1000);
             }
         } catch (Exception e ) {
-            logger.info("[NgocTu-Server]: Thread clean up encountered error with {}", e.toString());
+            logger.info("Thread clean up encountered error with {}", e.toString());
         }
     }
 
