@@ -1,7 +1,7 @@
 package com.example.xtream.repository;
 
 import com.example.xtream.dto.response.InvestorSearchDTO;
-import com.example.xtream.model.Investor;
+import com.example.xtream.model.investor.Investors;
 import com.example.xtream.model.common.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +14,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-public interface InvestorRepository extends JpaRepository<Investor,Long>
+public interface InvestorRepository extends JpaRepository<Investors,Integer>
 {
-        Optional<Investor> findByEmail(String email);
-        Optional<Investor> findByTaxFileNumber(String taxFileNumber);
+        Optional<Investors> findByEmail(String email);
+        Optional<Investors> findByTaxFileNumber(String taxFileNumber);
         @Query("""
             SELECT DISTINCT
                 investor.id as investorId,
@@ -27,8 +27,8 @@ public interface InvestorRepository extends JpaRepository<Investor,Long>
                 investor.investorAddress.postCode as investorPostCode,
                 investorAccount.status as investorAccountStatus,
                 investor.email as investorEmail
-            FROM Investor investor
-            JOIN InvestorAccount investorAccount ON investor.id = investorAccount.investor.id
+            FROM Investors investor
+            JOIN InvestorAccount investorAccount ON investor.id = investorAccount.investors.id
             WHERE
             (:investorId is null or investor.id = :investorId)
             AND (:investorAccountId is null or investorAccount.id = :investorAccountId)

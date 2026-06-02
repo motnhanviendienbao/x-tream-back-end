@@ -1,8 +1,8 @@
 package com.example.xtream.rest;
-import com.example.xtream.dto.request.GetAccessTokenDTO;
-import com.example.xtream.dto.request.RegisterDTO;
-import com.example.xtream.dto.request.LoginDTO;
-import com.example.xtream.dto.request.ResetPasswordDTO;
+import com.example.xtream.dto.request.GetAccessTokenRequestDTO;
+import com.example.xtream.dto.request.RegisterRequestDTO;
+import com.example.xtream.dto.request.LoginRequestDTO;
+import com.example.xtream.dto.request.ResetPasswordRequestDTO;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.service.SystemService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class SystemResource {
      * @return token if success, opposite is error status
      */
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> login(@RequestBody @Valid LoginDTO loginRequest ) {
+    public ResponseEntity<ResponseDTO> login(@RequestBody @Valid LoginRequestDTO loginRequest ) {
         return ResponseEntity.ok(systemService.login(loginRequest.getUsername(),loginRequest.getPassword()));
     }
 
@@ -38,7 +38,7 @@ public class SystemResource {
      * @return  status
      */
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO request) {
+    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
         return ResponseEntity.ok(systemService.register(request.getUsername(), request.getPassword(), request.getRole()));
     }
 
@@ -49,7 +49,7 @@ public class SystemResource {
      * @return  status
      */
     @PostMapping("/reset-password")
-    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody @Valid ResetPasswordDTO request) {
+    public ResponseEntity<ResponseDTO> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
         return ResponseEntity.ok(systemService.resetPassword(request.getUsername(),request.getNewPassword()));
     }
 
@@ -60,7 +60,7 @@ public class SystemResource {
      * @return  status
      */
     @PostMapping("/refresh")
-    public ResponseEntity<ResponseDTO> getAccessToken(@RequestBody @Valid GetAccessTokenDTO request) {
+    public ResponseEntity<ResponseDTO> getAccessToken(@RequestBody @Valid GetAccessTokenRequestDTO request) {
         return ResponseEntity.ok(systemService.getAccessToken(request.getRefresh()));
     }
     /**

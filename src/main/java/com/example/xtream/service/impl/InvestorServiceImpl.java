@@ -1,14 +1,17 @@
 package com.example.xtream.service.impl;
 
 import com.example.xtream.constant.ErrorMessages;
-import com.example.xtream.dto.request.CreateInvestorDTO;
-import com.example.xtream.dto.request.InvestorInvestmentDTO;
-import com.example.xtream.dto.request.UpdateInvestorDetailsDTO;
-import com.example.xtream.dto.response.InvestorAccountsDTO;
+import com.example.xtream.dto.request.CreateInvestorRequestDTO;
+import com.example.xtream.dto.request.UpdateInvestorDetailsRequestDTO;
 import com.example.xtream.dto.response.InvestorSearchDTO;
 import com.example.xtream.dto.response.ResponseDTO;
-import com.example.xtream.model.*;
 import com.example.xtream.model.common.Status;
+import com.example.xtream.model.investment.Investments;
+import com.example.xtream.model.investor.InvestorAccount;
+import com.example.xtream.model.investor.InvestorAccountInvestment;
+import com.example.xtream.model.investor.InvestorAddress;
+import com.example.xtream.model.investor.Investors;
+import com.example.xtream.model.product.Products;
 import com.example.xtream.repository.*;
 import com.example.xtream.service.InvestorService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,13 +63,13 @@ public class InvestorServiceImpl implements InvestorService {
         // Check exist investorId
         investorId
                 .ifPresent(integer -> investorRepository
-                .findById(integer.longValue())
+                .findById(integer)
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND)));
 
         // Check exist investorAccountId
         investorAccountId
                 .ifPresent(integer -> investorAccountRepository
-                .findById(integer.longValue())
+                .findById(integer)
                 .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_ACCOUNT_ID_NOT_FOUND)));
 
         // Pagination
@@ -101,32 +102,73 @@ public class InvestorServiceImpl implements InvestorService {
      */
     @Override
     @Transactional
-    public ResponseDTO createInvestor(CreateInvestorDTO dto)
+    public ResponseDTO createInvestor(CreateInvestorRequestDTO dto)
     {
-        validateUniqueness(dto);
-        Products product = resolveProduct(dto.getProductId());
-        List<Investments> investments = resolveAndValidateInvestments(dto.getInvestments());
+        // TODO: Insert investor info
+        Investors investor = new Investors();
+        InvestorAddress investorAddress = new InvestorAddress();
 
-        Investor investor = buildInvestor(dto);
+        investorAddress.setPropertyName(dto.getPropertyName());
+        investorAddress.setStreetName1(dto.getStreetName1());
+        investorAddress.setStreetName2(dto.getStreetName2());
+        investorAddress.setStreetNumber(dto.getStreetNumber());
+        investorAddress.setCity(dto.getCity());
+        investorAddress.setPostCode(dto.getPostCode());
+        investorAddress.setDistrict(dto.getDistrict());
+
+        investor.setInvestorAddress(investorAddress);
+        investor.setEmail(dto.getEmail());
+        investor.setDateOfBirth(dto.getDob());
+        investor.setEmail(dto.getEmail());
+        investor.setGender(dto.getGender());
+        investor.setGivenNames(dto.getGivenName());
+        investor.setSecondaryPhone(dto.getHomePhone());
+        investor.setMobile(dto.getMobile());
+        investor.setNextContactMethod(dto.getNextBestContactMethod());
+        investor.setBestContactMethod(dto.getPreferredContactMethod());
+        investor.setRetirementAge(dto.getRetirementAge());
+        investor.setSurname(dto.getSurname());
+        investor.setTitle(dto.getTitle());
+//        investor.setTaxFileNumber(SecurityUtil.encrypt(dto.getTaxFileNumber()));
+        investor.setTaxFileNumber(dto.getTaxFileNumber());
+        investor.setStatus(Status.ACTIVE);
+        // TODO: Insert investor account info
+        InvestorAccount account = new InvestorAccount();
+
+        account.setStartDate(dto.getStartDate());
+        account.setInvestors(investor);
         investorRepository.save(investor);
+        // SUB-TODO: Load product up for new account
+        Products product = productRepository.findById(dto.getProductCode()).get();
 
-        InvestorAccount account = buildDefaultAccount(investor, product);
+        account.setProducts(product);
+        account.setStatus(Status.ACTIVE);
         investorAccountRepository.save(account);
+        // TODO: Insert investor account investment info
+        dto.getInvestments().forEach((i) -> {
+            InvestorAccountInvestment accountInvestment = new InvestorAccountInvestment();
 
-        createInvestmentAllocations(account, dto.getInvestments(), investments);
+            accountInvestment.setInvestorAccount(account);
+            accountInvestment.setStrategyPercentage(i.getInvestmentStrategy());
+            Investments investment = investmentRepository.findById(i.getInvestmentCode()).get();
+            accountInvestment.setInvestment(investment);
+            investorAccountInvestmentRepository.save(accountInvestment);
+        });
 
-        return ResponseDTO
-                .builder()
-                .build();
+        return ResponseDTO.builder().build();
     }
 
     @Override
     @Transactional
-    public ResponseDTO getInvestorDetails(Long investorId)
+    public ResponseDTO getInvestor(int investorId)
     {
-        Investor investor = investorRepository
-                .findById((investorId))
-                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
+        Investors investor = investorRepository
+                .findById(investorId)
+//                .map(actor -> {
+//                    actor.setTaxFileNumber(SecurityUtil.decrypt(actor.getTaxFileNumber()));
+//                    return actor;
+//                })
+                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
 
         return ResponseDTO
                 .builder()
@@ -136,165 +178,39 @@ public class InvestorServiceImpl implements InvestorService {
 
     @Override
     @Transactional
-    public ResponseDTO updateInvestorDetails(UpdateInvestorDetailsDTO updateInvestorDetailsDTO)
+    public ResponseDTO updateInvestor(int investorId, UpdateInvestorDetailsRequestDTO dto)
     {
-        Investor investor = investorRepository
-                .findById(updateInvestorDetailsDTO.getInvestorId())
-                .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
-
-        investor.setEmail(updateInvestorDetailsDTO.getEmail());
-        investor.getInvestorAddress().setCity(updateInvestorDetailsDTO.getCity());
-        investor.getInvestorAddress().setDistrict(updateInvestorDetailsDTO.getDistrict());
-        investor.setDateOfBirth(updateInvestorDetailsDTO.getDob());
-        investor.setEmail(updateInvestorDetailsDTO.getEmail());
-        investor.setGender(updateInvestorDetailsDTO.getGender());
-        investor.setGivenNames(updateInvestorDetailsDTO.getGivenName());
-        investor.setSecondaryPhone(updateInvestorDetailsDTO.getHomePhone());
-        investor.setMobile(updateInvestorDetailsDTO.getMobile());
-        investor.setNextContactMethod(updateInvestorDetailsDTO.getNextBestContactMethod());
-        investor.getInvestorAddress().setPostCode(updateInvestorDetailsDTO.getPostCode());
-        investor.setBestContactMethod(updateInvestorDetailsDTO.getPreferredContactMethod());
-        investor.setRetirementAge(updateInvestorDetailsDTO.getRetirementAge());
-        investor.getInvestorAddress().setPropertyName(updateInvestorDetailsDTO.getPropertyName());
-        investor.getInvestorAddress().setStreetName1(updateInvestorDetailsDTO.getStreetName1());
-        investor.getInvestorAddress().setStreetName2(updateInvestorDetailsDTO.getStreetName2());
-        investor.getInvestorAddress().setStreetNumber(updateInvestorDetailsDTO.getStreetNumber());
-        investor.setSurname(updateInvestorDetailsDTO.getSurname());
-        // todo: required hash this field in db and decrypt when load up
-        investor.setTaxFileNumber(updateInvestorDetailsDTO.getTaxFileNumber());
-        investor.setTitle(updateInvestorDetailsDTO.getTitle());
-        logger.info("Investor Update Success");
-        return ResponseDTO.builder().build();
-    }
-
-    @Override
-    @Transactional
-    public ResponseDTO getInvestorAccountsByInvestorId(Long investorId,Pageable pageable) {
-        Investor investor = investorRepository
+        Investors investor = investorRepository
                 .findById(investorId)
                 .orElseThrow(()-> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND));
 
-        ResponseDTO accounts = searchInvestorAccounts(investorId,pageable);
+        InvestorAddress investorAddress = new InvestorAddress();
 
-        return ResponseDTO
-                .builder()
-                .response(accounts)
-                .build();
-    }
+        investorAddress.setPropertyName(dto.getPropertyName());
+        investorAddress.setStreetName1(dto.getStreetName1());
+        investorAddress.setStreetName2(dto.getStreetName2());
+        investorAddress.setStreetNumber(dto.getStreetNumber());
+        investorAddress.setCity(dto.getCity());
+        investorAddress.setPostCode(dto.getPostCode());
+        investorAddress.setDistrict(dto.getDistrict());
 
-    public ResponseDTO searchInvestorAccounts(Long investorId ,Pageable pageable)
-    {
-        Optional<Long> investorIdOp = Optional.of(investorId);
-        // Check exist investorId
-        investorIdOp
-                .ifPresent(integer -> investorRepository
-                .findById(integer)
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTOR_NOT_FOUND)));
-        // Pagination
-        Page<InvestorAccountsDTO> pageOfInvestorAccounts = investorAccountRepository.findAccountsByInvestorId(investorId,pageable);
-
-        return ResponseDTO
-                .builder()
-                .response(pageOfInvestorAccounts.getContent())
-                .totalElements(pageOfInvestorAccounts.getTotalElements())
-                .totalPages(pageOfInvestorAccounts.getTotalPages())
-                .currentPage(pageOfInvestorAccounts.getNumber())
-                .build();
-    }
-
-
-    private void validateUniqueness(CreateInvestorDTO dto) {
-        investorRepository.findByEmail(dto.getEmail()).ifPresent(existing -> {
-            throw new RuntimeException(ErrorMessages.EMAIL_ALREADY_EXISTS);
-        });
-        if (dto.getTaxFileNumber() != null && !dto.getTaxFileNumber().isBlank()) {
-            investorRepository.findByTaxFileNumber(dto.getTaxFileNumber()).ifPresent(existing -> {
-                throw new RuntimeException(ErrorMessages.TFN_ALREADY_EXISTS);
-            });
-        }
-    }
-
-    private Products resolveProduct(String productId) {
-        if (productId == null || productId.isBlank()) {
-            throw new RuntimeException(ErrorMessages.PRODUCT_NOT_FOUND);
-        }
-        return productRepository.findById(Long.valueOf(productId))
-                .orElseThrow(() -> new RuntimeException(ErrorMessages.PRODUCT_NOT_FOUND));
-    }
-
-    private List<Investments> resolveAndValidateInvestments(List<InvestorInvestmentDTO> investmentDTOs) {
-        if (investmentDTOs == null || investmentDTOs.isEmpty()) {
-            throw new RuntimeException(ErrorMessages.INVESTMENTS_REQUIRED);
-        }
-
-        int totalStrategy = investmentDTOs.stream()
-                .mapToInt(InvestorInvestmentDTO::getInvestmentStrategy)
-                .sum();
-        if (totalStrategy != 100) {
-            throw new RuntimeException(ErrorMessages.INVESTMENT_STRATEGY_MUST_TOTAL_100);
-        }
-
-        return investmentDTOs.stream()
-                .map(dto -> investmentRepository.findById((long) dto.getInvestmentNameOrId())
-                        .orElseThrow(() -> new RuntimeException(ErrorMessages.INVESTMENT_NOT_FOUND)))
-                .toList();
-    }
-
-    private Investor buildInvestor(CreateInvestorDTO dto) {
-        Investor investor = new Investor();
-        investor.setGivenNames(dto.getGivenName());
-        investor.setSurname(dto.getSurname());
+        investor.setInvestorAddress(investorAddress);
+        investor.setEmail(dto.getEmail());
         investor.setDateOfBirth(dto.getDob());
         investor.setEmail(dto.getEmail());
         investor.setGender(dto.getGender());
-        investor.setTitle(dto.getTitle());
-        investor.setRetirementAge(dto.getRetirementAge());
-        investor.setTaxFileNumber(dto.getTaxFileNumber());
-        investor.setPrimaryPhone(dto.getHomePhone());
-        investor.setMobile(dto.getMobile());
+        investor.setGivenNames(dto.getGivenName());
         investor.setSecondaryPhone(dto.getHomePhone());
-        investor.setBestContactMethod(dto.getPreferredContactMethod());
+        investor.setMobile(dto.getMobile());
         investor.setNextContactMethod(dto.getNextBestContactMethod());
-        investor.setStatus(Status.A);
+        investor.setBestContactMethod(dto.getPreferredContactMethod());
+        investor.setRetirementAge(dto.getRetirementAge());
+        investor.setSurname(dto.getSurname());
+        investor.setTitle(dto.getTitle());
+//        investor.setTaxFileNumber(SecurityUtil.encrypt(dto.getTaxFileNumber()));
+        investor.setTaxFileNumber(dto.getTaxFileNumber());
 
-        InvestorAddress address = new InvestorAddress();
-        address.setStreetNumber(dto.getStreetNumber());
-        address.setStreetName1(dto.getStreetName1());
-        address.setStreetName2(dto.getStreetName2());
-        address.setCity(dto.getCity());
-        address.setDistrict(dto.getDistrict());
-        address.setPostCode(dto.getPostCode());
-        address.setPropertyName(dto.getPropertyName());
-        investor.setInvestorAddress(address);
-
-        return investor;
+        return ResponseDTO.builder().build();
     }
 
-    private InvestorAccount buildDefaultAccount(Investor investor, Products product) {
-        InvestorAccount account = new InvestorAccount();
-        account.setInvestor(investor);
-        account.setProduct(product);
-        account.setStatus(Status.A);
-        return account;
-    }
-
-    private void createInvestmentAllocations(
-            InvestorAccount account,
-            List<InvestorInvestmentDTO> investmentDTOs,
-            List<Investments> investments
-    ) {
-        for (int i = 0; i < investments.size(); i++) {
-            Investments investment = investments.get(i);
-            InvestorInvestmentDTO dto = investmentDTOs.get(i);
-
-            InvestorAccountInvestment allocation = new InvestorAccountInvestment();
-            allocation.setInvestorAccount(account);
-            allocation.setInvestment(investment);
-            allocation.setStrategyPercentage(BigDecimal.valueOf(dto.getInvestmentStrategy()));
-            allocation.setBalance(BigDecimal.ZERO);
-            allocation.setUnits(BigDecimal.ZERO);
-
-            investorAccountInvestmentRepository.save(allocation);
-        }
-    }
 }

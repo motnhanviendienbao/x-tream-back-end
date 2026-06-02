@@ -1,7 +1,7 @@
 package com.example.xtream.rest;
 
-import com.example.xtream.dto.request.CreateInvestorDTO;
-import com.example.xtream.dto.request.UpdateInvestorDetailsDTO;
+import com.example.xtream.dto.request.CreateInvestorRequestDTO;
+import com.example.xtream.dto.request.UpdateInvestorDetailsRequestDTO;
 import com.example.xtream.dto.response.ResponseDTO;
 import com.example.xtream.model.common.Status;
 import com.example.xtream.service.InvestorService;
@@ -22,7 +22,7 @@ import java.util.Optional;
  * Investors resource
  */
 @RestController
-@RequestMapping("api/investors")
+@RequestMapping("api/investor")
 @RequiredArgsConstructor
 public class InvestorResource {
 
@@ -45,7 +45,7 @@ public class InvestorResource {
      * @return  page of investors
      */
     @GetMapping("/search")
-    public ResponseEntity<ResponseDTO> getListInvestors(
+    public ResponseEntity<ResponseDTO> searchInvestors(
             @RequestParam("investorId") Optional<Integer> investorId,
             @RequestParam("investorAccountId") Optional<Integer> investorAccountId,
             @RequestParam("investorEmail") Optional<String> investorEmail,
@@ -59,19 +59,20 @@ public class InvestorResource {
     {
         ResponseDTO response = investorService.searchInvestors(investorId,investorAccountId,investorEmail,
                 investorName,investorStatus,from,to,activeAccountOnly,postcode,pageable);
+
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Get details of specific investor without investment info
+     * Get info of investor
      *
      * @param investorId param
      * @return investor details
      */
-    @GetMapping("/detail/{investorId}")
-    public ResponseEntity<ResponseDTO> getInvestorDetails(@PathVariable Long investorId)
+    @GetMapping("/{investorId}")
+    public ResponseEntity<ResponseDTO> getInvestor(@PathVariable Integer investorId)
     {
-        ResponseDTO response = investorService.getInvestorDetails(investorId);
+        ResponseDTO response = investorService.getInvestor(investorId);
         return ResponseEntity.ok(response);
     }
 
@@ -80,31 +81,24 @@ public class InvestorResource {
      */
     @PostMapping("/add")
     public ResponseEntity<ResponseDTO> createInvestor(
-            @RequestBody @Valid CreateInvestorDTO createInvestorRequestDTO)
+            @RequestBody @Valid CreateInvestorRequestDTO createInvestorRequestDTO)
     {
         ResponseDTO response = investorService.createInvestor(createInvestorRequestDTO);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Update investor details info without investment info
+     * Update investor info without investment info
+     *
      * @param updateInvestorDetailsDTO request
      * @return status
      */
-    @PostMapping("/update")
-    public ResponseEntity<ResponseDTO> updateInvestorDetails(
-            @RequestBody @Valid UpdateInvestorDetailsDTO updateInvestorDetailsDTO)
+    @PatchMapping("/{investorId}")
+    public ResponseEntity<ResponseDTO> updateInvestor(
+            @PathVariable  int investorId,
+            @RequestBody @Valid UpdateInvestorDetailsRequestDTO updateInvestorDetailsDTO)
     {
-        ResponseDTO response = investorService.updateInvestorDetails(updateInvestorDetailsDTO);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/accounts/{investorId}")
-    public ResponseEntity<ResponseDTO> updateInvestorDetails(
-            @PathVariable Long investorId,
-            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable)
-    {
-        ResponseDTO response = investorService.getInvestorAccountsByInvestorId(investorId,pageable);
+        ResponseDTO response = investorService.updateInvestor(investorId,updateInvestorDetailsDTO);
         return ResponseEntity.ok(response);
     }
 

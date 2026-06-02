@@ -34,7 +34,7 @@ public class JwtTokenAuthenticationServiceImpl implements TokenAuthenticationSer
 
     private final static Logger logger = LogManager.getLogger(JwtTokenAuthenticationServiceImpl.class);
 
-    public String createToken(final Long userId, final String userType) {
+    public String createToken(final int userId, final String userType) {
         try {
             // step 1: prepare payload.
             Map<String, Object> tokenData = new HashMap<>();

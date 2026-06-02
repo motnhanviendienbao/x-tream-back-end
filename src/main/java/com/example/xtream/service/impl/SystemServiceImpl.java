@@ -1,7 +1,7 @@
 package com.example.xtream.service.impl;
 import com.example.xtream.constant.ErrorMessages;
 import com.example.xtream.dto.response.ResponseDTO;
-import com.example.xtream.model.User;
+import com.example.xtream.model.user.User;
 
 import com.example.xtream.repository.SystemRepository;
 import com.example.xtream.security.jwtAuthen.cache.CacheObject;
@@ -10,7 +10,6 @@ import com.example.xtream.service.LocalCache;
 import com.example.xtream.service.TokenAuthenticationService;
 import com.example.xtream.service.SystemService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.webresources.Cache;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -58,8 +56,8 @@ public class SystemServiceImpl implements SystemService {
         // check password
         if(!passwordEncoder.matches(password,user.getHashedPassword())) throw new BadCredentialsException(ErrorMessages.INVALID_PASSWORD);
 
-        String userType = user.getRole();
-        Long userId= user.getId();
+        String userType = "user.getRole()";
+        int userId= user.getId();
 
         String accessToken = tokenAuthenticationService.createToken(userId,userType);
         String refreshToken = UUID.randomUUID().toString().replace("-","");
@@ -87,11 +85,9 @@ public class SystemServiceImpl implements SystemService {
         User user = new User();
         user.setUserName(username);
         user.setHashedPassword(passwordEncoder.encode(password));
-        user.setRole(role);
         systemRepository.save(user);
 
-        return ResponseDTO.builder()
-                .build();
+        return ResponseDTO.builder().build();
     }
 
     /**
@@ -115,7 +111,7 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     @Transactional
-    public List<SimpleGrantedAuthority> getAuthoritiesByUserId(Long userId)
+    public List<SimpleGrantedAuthority> getAuthoritiesByUserId(int userId)
     {
         return systemRepository.findAuthoritiesByUserId(userId)
                 .stream()
@@ -132,8 +128,8 @@ public class SystemServiceImpl implements SystemService {
         if (StringUtils.isBlank(refreshToken)) throw new BadCredentialsException(ErrorMessages.TOKEN_EXPIRE_CODE);
         if (Objects.isNull(cacheObject)) throw new BadCredentialsException(ErrorMessages.TOKEN_CREDENTIAL_NOT_FOUND);
 
-        Long userId = (Long) cacheObject.getCacheValue();
-        String userType = systemRepository.findById(userId).orElseThrow(() -> new BadCredentialsException(ErrorMessages.USER_NOT_EXIST)).getRole();
+        int userId = (Integer)  cacheObject.getCacheValue();
+        String userType = "empty";
 
         String newAccessToken = tokenAuthenticationService.createToken(userId,userType);
         if (StringUtils.isBlank(newAccessToken)) throw new RuntimeException(ErrorMessages.TOKEN_EXPIRE_CODE);

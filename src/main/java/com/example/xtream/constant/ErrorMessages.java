@@ -1,6 +1,7 @@
 package com.example.xtream.constant;
 
 public final class ErrorMessages {
+    // RUNTIME SPECIFY ERRORS
     public static final String INVALID_USERNAME = "INVALID_USERNAME";
     public static final String INVALID_PASSWORD = "INVALID_USERNAME";
     public static final String USERNAME_ALREADY_EXIST = "USERNAME_ALREADY_EXIST";
@@ -19,7 +20,7 @@ public final class ErrorMessages {
     public static final String NO_AUTHENTICATION_PROVIDER = "NO_AUTHENTICATION_PROVIDER";
     public static final String USER_DETAIL_IS_NULL = "USER_DETAIL_IS_NULL";
     public static final String TOKEN_EXPIRE_CODE = "000";
-
-
-
+    public static final String NOT_EXIST_INVESTOR_FOR_THIS_ACCOUNT = "NOT_EXIST_INVESTOR_FOR_THIS_ACCOUNT";
+    public static final String NOT_EXIST_INVESTOR_OR_ACCOUNT_FOR_THIS_INVESTMENT = "NOT_EXIST_INVESTOR_OR_ACCOUNT_FOR_THIS_INVESTMENT";
+    public static final String NOT_EXIST_INVESTMENT = "NOT_EXIST__INVESTMENT";
 }

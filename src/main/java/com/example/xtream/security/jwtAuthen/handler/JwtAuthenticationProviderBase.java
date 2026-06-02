@@ -33,11 +33,12 @@ public abstract class JwtAuthenticationProviderBase implements AuthenticationPro
         Claims claims = getJwtClaims(tokenPlainText);
         if (Objects.isNull(claims)) return null;
 
-        Long userId = claims.get(Configurations.TOKEN_PAYLOAD_KEY_1, Long.class);
+        Integer userId = claims.get(Configurations.TOKEN_PAYLOAD_KEY_1, Integer.class);
         String userRole = claims.get(Configurations.TOKEN_PAYLOAD_KEY_2, String.class);
 
         // get authorities
-        List<SimpleGrantedAuthority> authorities = getAuthorities(userId,userRole);
+//        List<SimpleGrantedAuthority> authorities = getAuthorities(userId,userRole);
+        List<SimpleGrantedAuthority> authorities = Collections.emptyList();
         authorities = Objects.requireNonNullElse(authorities,Collections.emptyList());
 
         // return success authentication object
@@ -50,6 +51,6 @@ public abstract class JwtAuthenticationProviderBase implements AuthenticationPro
     }
 
     protected abstract boolean validateToken(String tokenPlainText);
-    protected abstract List<SimpleGrantedAuthority> getAuthorities(Long userId, String userType);
+    protected abstract List<SimpleGrantedAuthority> getAuthorities(int userId, String userType);
     protected abstract Claims getJwtClaims(String token);
 }

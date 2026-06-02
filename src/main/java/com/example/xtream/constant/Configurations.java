@@ -4,7 +4,16 @@ import org.apache.catalina.authenticator.SavedRequest;
 
 public final class Configurations {
     public static final String CORS_ACCEPT_ALL = "*";
-    public static final String[] WHITE_LIST = {"/auth/login","/auth/refresh","/auth/register","/swagger-ui.html","/swagger-ui/**","/v3/api-docs","/v3/api-docs/**"};
+    public static final String[] WHITE_LIST =
+            {
+            "/auth/login",
+            "/auth/refresh",
+            "/auth/register",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs",
+            "/v3/api-docs/**"
+            };
     public static final String SWAGGER_SECURITY_SCHEMA = "basicAuth";
     public static final String SWAGGER_TYPE_SCHEMA ="basic";
     public static final String SWAGGER_INVESTORS_PATH = "/api/investors/**";
@@ -17,7 +26,7 @@ public final class Configurations {
     public static final String TOKEN_PAYLOAD_KEY_1 = "userId";
     public static final String TOKEN_PAYLOAD_KEY_2 = "userType";
     public static final String TOKEN_PAYLOAD_KEY_3 = "token_create_date";
-    public static final int TOKEN_EXPIRE_PERIOD = 2;
+    public static final int TOKEN_EXPIRE_PERIOD = 60*24;
     public static final String TOKEN_CACHE_KEY = "token@";
     public static final String USER_CACHE_KEY = "user@system@";
     public static final String ROLE_CACHE_KEY = "user@system@role@";

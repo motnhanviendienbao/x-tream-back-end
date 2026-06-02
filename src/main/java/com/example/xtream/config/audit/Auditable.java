@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 /**
@@ -23,12 +24,12 @@ public abstract class Auditable {
      * automatically update by JPA when insert
      */
     @CreatedDate
-    protected OffsetDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     /**
      * automatically update by JPA when update
      */
     @LastModifiedDate
-    protected OffsetDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
 }

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -22,6 +23,6 @@ public class AuditConfig {
      */
     @Bean(name = "auditDatetimeProvider")
     public DateTimeProvider dateTimeProvider() {
-        return () -> Optional.of(OffsetDateTime.now());
+        return () -> Optional.of(LocalDateTime.now());
     }
 }
